@@ -3,7 +3,7 @@
     <div class="recommend-content">
       <div class="slider-wrapper" v-if="recommends.length">
         <slider>
-          <div v-for="item in recommends">
+          <div v-for="(item,index) in recommends" :key="index">
             <a :href="item.linkUrl">
               <img :src="item.picUrl">
             </a>
@@ -23,17 +23,21 @@
 </template>
 <script type="text/ecmascript-6">
   import Slider from 'base/slider/slider.vue';
-  import {getRecommend} from "api/recommend.js";
+  import {getRecommend,getDiscList} from "api/recommend.js";
   import {ERR_OK} from "api/config.js";
 
   export default {
     data() {
       return {
-        recommends: []
+        recommends: [],
+        discList:[]
       }
     },
     created() {
+      // 获取轮播图数据
       this._getRecommend();
+      // 获取歌单列表数据
+      this._getDiscList();
     },
     components: {
       Slider
@@ -43,6 +47,13 @@
         getRecommend().then((res) => {
           if (res.code === ERR_OK) {
             this.recommends = res.data.slider;
+          }
+        })
+      },
+      _getDiscList(){
+        getDiscList().then((res)=>{
+          if(res.code === ERR_OK){
+            this.discList = res.data.list;
           }
         })
       }

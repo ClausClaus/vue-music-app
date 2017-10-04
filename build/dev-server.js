@@ -11,6 +11,7 @@ var express = require('express')
 var webpack = require('webpack')
 var proxyMiddleware = require('http-proxy-middleware')
 var webpackConfig = require('./webpack.dev.conf')
+var axios = require('axios')
 
 // default port where dev server listens for incoming traffic
 var port = process.env.PORT || config.dev.port
@@ -21,6 +22,26 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 var proxyTable = config.dev.proxyTable
 
 var app = express()
+
+/* 自定义代理请求 start */
+var apiRoutes = express.Router();
+apiRoutes.get('/getDiscList', function (req, res) {
+  const url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg';
+  axios.get(url, {
+    // headers是修改此次请求的请求头数据
+    headers: {
+      referer: 'https://c.y.qq.com',
+      host: 'c.y.qq.com',
+    },
+    params: req.query
+  }).then((response) => {
+    res.json(response.data) // 将请求的数据返回给浏览器端，前端才可以获取到
+  }).catch((err) => {
+    console.log(err + '请求歌单列表失败');
+  })
+})
+app.use('/api', apiRoutes);
+/* 自定义代理请求 end */
 var compiler = webpack(webpackConfig)
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
