@@ -1,4 +1,4 @@
-/* --------jsonp请求的公共配置------- */
+/* --------jsonp请求的公共参数配置------- */
 export const commonParams = {
   g_tk:5381,
   format:'jsonp',

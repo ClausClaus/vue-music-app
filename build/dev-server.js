@@ -39,6 +39,20 @@ apiRoutes.get('/getDiscList', function (req, res) {
   }).catch((err) => {
     console.log(err + '请求歌单列表失败');
   })
+});
+apiRoutes.get('/getSingerList', function (req, res) {
+  const url = 'https://c.y.qq.com/v8/fcg-bin/v8.fcg';
+  axios.get(url, {
+    headers: {
+      referer: 'https://c.y.qq.com',
+      host: 'c.y.qq.com',
+    },
+    params: req.query
+  }).then((response) => {
+    res.json(response.data)
+  }).catch((err) => {
+    console.log(err + '请求歌手列表失败');
+  })
 })
 app.use('/api', apiRoutes);
 /* 自定义代理请求 end */

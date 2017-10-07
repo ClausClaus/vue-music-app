@@ -6,7 +6,7 @@
           <slider>
             <div v-for="(item,index) in recommends" :key="index">
               <a :href="item.linkUrl">
-                <img @load="loadImage" :src="item.picUrl">
+                <img @load="loadImage" :src="item.picUrl" class="needsclick">
               </a>
             </div>
           </slider>
@@ -28,10 +28,14 @@
           </ul>
         </div>
       </div>
+      <div class="loading-container" v-show="!discList.length">
+        <loading></loading>
+      </div>
     </scroll>
   </div>
 </template>
 <script type="text/ecmascript-6">
+import Loading from 'base/loading/loading.vue';
 import Slider from 'base/slider/slider.vue';
 import Scroll from 'base/scroll/scroll.vue';
 import { getRecommend, getDiscList } from "api/recommend.js";
@@ -50,7 +54,8 @@ export default {
   },
   components: {
     Slider,
-    Scroll
+    Scroll,
+    Loading
   },
   methods: {
     // 获取轮播图数据
