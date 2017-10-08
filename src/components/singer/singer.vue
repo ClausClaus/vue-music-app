@@ -1,6 +1,7 @@
 <template>
   <div class="singer singer-container" ref="singer">
-    <list-view :data="singers"></list-view>
+    <list-view :data="singers" @select="selectSinger"></list-view>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -22,6 +23,12 @@ export default {
 
   },
   methods: {
+    // 点击歌手名称时触发编程式导航跳转，传递歌手id作为参数
+    selectSinger(singer) {
+      this.$router.push({
+        path: `/singer/${singer.id}`
+      })
+    },
     /**
      * 请求歌手列表数据
      */
