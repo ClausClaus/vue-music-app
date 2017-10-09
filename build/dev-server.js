@@ -25,36 +25,10 @@ var app = express()
 
 /* 自定义代理请求 start */
 var apiRoutes = express.Router();
-apiRoutes.get('/getDiscList', function (req, res) {
-  const url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg';
-  axios.get(url, {
-    // headers是修改此次请求的请求头数据
-    headers: {
-      referer: 'https://c.y.qq.com',
-      host: 'c.y.qq.com',
-    },
-    params: req.query
-  }).then((response) => {
-    res.json(response.data) // 将请求的数据返回给浏览器端，前端才可以获取到
-  }).catch((err) => {
-    console.log(err + '请求歌单列表失败');
-  })
-});
-apiRoutes.get('/getSingerList', function (req, res) {
-  const url = 'https://c.y.qq.com/v8/fcg-bin/v8.fcg';
-  axios.get(url, {
-    headers: {
-      referer: 'https://c.y.qq.com',
-      host: 'c.y.qq.com',
-    },
-    params: req.query
-  }).then((response) => {
-    res.json(response.data)
-  }).catch((err) => {
-    console.log(err + '请求歌手列表失败');
-  })
-})
-app.use('/api', apiRoutes);
+var recommend = require('./middleware/recommend');
+var singer = require('./middleware/singer');
+app.use('/api', singer);
+app.use('/api', recommend);
 /* 自定义代理请求 end */
 var compiler = webpack(webpackConfig)
 
