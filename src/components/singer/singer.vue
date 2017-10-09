@@ -8,6 +8,7 @@
 <script type="text/ecmascript-6">
 import { getSingerList } from "api/singer.js";
 import { ERR_OK } from "api/config.js";
+import { mapMutations } from 'vuex'; // vuex提供的对mutation的映射
 import Singer from "common/js/singer.js";
 import ListView from 'base/listview/listview.vue';
 const HOT_NAME = '热门';
@@ -28,6 +29,7 @@ export default {
       this.$router.push({
         path: `/singer/${singer.id}`
       })
+      this.setSinger(singer);
     },
     /**
      * 请求歌手列表数据
@@ -93,7 +95,10 @@ export default {
         return a.title.charCodeAt(0) - b.title.charCodeAt(0);
       })
       return hot.concat(ret);
-    }
+    },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    })
   },
   components: {
     ListView
