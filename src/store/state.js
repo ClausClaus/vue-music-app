@@ -1,10 +1,12 @@
-/*
- * @Author: Smile 
- * @Date: 2017-10-08 15:39:56 
- * @Last Modified by: Smile
- * @Last Modified time: 2017-10-08 17:15:34
- */
+import {playMode} from 'common/js/config.js';
+
 const state = {
-  singer:{}
+  singer: {}, // 歌手信息{ id:xxx,avatar:xxx,name:xxx }
+  playing: false, // 播放器的播放与暂停
+  fullScreen: false, // 是否全屏
+  playList: [], // 播放列表
+  sequenceList: [], // 顺序列表，基于 播放列表 做了排序
+  mode: playMode.sequence, // 播放模式,默认是顺序播放
+  currentIndex: -1, // 当前播放的是哪首歌
 }
 export default state;
