@@ -37,14 +37,14 @@
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left">
-              <i class="icon-prev"></i>
+            <div class="icon i-left" :class="disableClass">
+              <i @click.stop.prevent="prev" class="icon-prev"></i>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disableClass">
               <i @click.stop.prevent="togglePlaying" :class="playIcon"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-next"></i>
+            <div class="icon i-right" :class="disableClass">
+              <i @click.stop.prevent="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
               <i class="icon icon-not-favorite"></i>
@@ -73,7 +73,7 @@
       </div>
       <!-- 播放器收起来后固定在底部的小播放器 end -->
     </transition>
-    <audio ref="audio" :src="currentSong.url"></audio>
+    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error"></audio>
   </div>
 </template>
 
@@ -85,7 +85,9 @@
   const transform = prefixStyle('transform');
   export default {
     data() {
-      return {}
+      return {
+        songReady: false // 标志位，标识歌曲的 切换/请求 是否已经完成。（节流阀）
+      }
     },
     watch: {
       currentSong() {
@@ -101,8 +103,49 @@
       }
     },
     methods: {
-      //
+      // 歌曲已经切换完毕
+      ready() {
+        this.songReady = true;
+      },
+      // 切换歌曲时发生错误，不做处理的话其他功能会不能使用
+      error() {
+        this.songReady = true;
+      },
+      // 上一曲
+      prev() {
+        if (!this.songReady) {
+          return;
+        }
+        let index = this.currentIndex - 1;
+        if (index === -1) {
+          index = this.playList.length - 1;
+        }
+        this.setCurrentIndex(index);
+        if (!this.playing) {
+          this.togglePlaying();
+        }
+        this.songReady = false;
+      },
+      // 下一曲
+      next() {
+        if (!this.songReady) {
+          return;
+        }
+        let index = this.currentIndex + 1;
+        if (index === this.playList.length) {
+          index = 0;
+        }
+        this.setCurrentIndex(index);
+        if (!this.playing) {
+          this.togglePlaying();
+        }
+        this.songReady = false;
+      },
+      // 切换播放与暂停
       togglePlaying() {
+        if (!this.songReady) {
+          return;
+        }
         this.setPlayIng(!this.playing);
       },
       // 关闭大播放器
@@ -171,6 +214,7 @@
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
         setPlayIng: 'SET_PLAYING_STAET',
+        setCurrentIndex: 'SET_CURRENT_INDEX'
       })
     },
     computed: {
@@ -183,11 +227,15 @@
       miniIcon() {
         return this.playing ? 'icon-pause-mini' : 'icon-play-mini';
       },
+      disableClass() {
+        return this.songReady ? '' : 'disable';
+      },
       ...mapGetters([
         'fullScreen',
         'playList',
         'currentSong',
-        'playing'
+        'playing',
+        'currentIndex'
       ])
     }
 
