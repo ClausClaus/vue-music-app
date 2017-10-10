@@ -33,6 +33,11 @@
         <!-- 中间旋转的图片 end -->
         <!-- 大播放器底部的按钮 start -->
         <div class="bottom">
+          <div class="progress-wrapper">
+            <span class="time time-l">{{format(currentTime)}}</span>
+            <div class="progress-bar-wrapper"></div>
+            <span class="time time-r">{{format(currentSong.duration)}}</span>
+          </div>
           <div class="operators">
             <div class="icon i-left">
               <i class="icon-sequence"></i>
@@ -73,7 +78,11 @@
       </div>
       <!-- 播放器收起来后固定在底部的小播放器 end -->
     </transition>
-    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error"></audio>
+    <audio ref="audio"
+           :src="currentSong.url"
+           @canplay="ready"
+           @error="error"
+           @timeupdate="updateTime"></audio>
   </div>
 </template>
 
@@ -86,7 +95,8 @@
   export default {
     data() {
       return {
-        songReady: false // 标志位，标识歌曲的 切换/请求 是否已经完成。（节流阀）
+        songReady: false, // 标志位，标识歌曲的 切换/请求 是否已经完成。（节流阀）
+        currentTime: 0
       }
     },
     watch: {
@@ -103,6 +113,25 @@
       }
     },
     methods: {
+      // 歌曲的当前播放时间
+      updateTime(e) {
+        this.currentTime = e.target.currentTime;
+      },
+      format(interval) {
+        interval = interval | 0;
+        console.log(interval);
+        const minute = interval / 60 | 0;
+        const second = this._pad(interval % 60);
+        return `${minute}:${second}`;
+      },
+      _pad(num, n = 2) {
+        let len = num.toString().length;
+        while (len < n) {
+          num = '0' + num;
+          len++;
+        }
+        return num;
+      },
       // 歌曲已经切换完毕
       ready() {
         this.songReady = true;
@@ -230,6 +259,7 @@
       disableClass() {
         return this.songReady ? '' : 'disable';
       },
+
       ...mapGetters([
         'fullScreen',
         'playList',
