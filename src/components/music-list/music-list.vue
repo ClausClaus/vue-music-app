@@ -22,7 +22,7 @@
             :probeType="probeType"
             @scroll="scroll">
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list @select="selectItem" :songs="songs"></song-list>
       </div>
       <div class="loading-container" v-show="!songs.length">
         <loading></loading>
@@ -32,6 +32,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import {mapActions} from 'vuex';
   import SongList from 'base/song-list/song-list.vue';
   import Scroll from 'base/scroll/scroll.vue';
   import Loading from 'base/loading/loading.vue';
@@ -56,7 +57,17 @@
       },
       scroll(position) {
         this.scrollY = position.y;
-      }
+      },
+      // 子组件传递过来的事件
+      selectItem(item, index) {
+        this.selectPlay({
+          list: this.songs,
+          index: index
+        });
+      },
+      ...mapActions([
+        'selectPlay'
+      ])
     },
     mounted() {
       this.imageHeight = this.$refs.bgImage.clientHeight;
