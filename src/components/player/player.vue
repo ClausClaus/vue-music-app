@@ -43,8 +43,8 @@
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
           <div class="operators">
-            <div class="icon i-left">
-              <i class="icon-sequence"></i>
+            <div class="icon i-left" @click.stop.prevent="changeMode">
+              <i :class="iconMode"></i>
             </div>
             <div class="icon i-left" :class="disableClass">
               <i @click.stop.prevent="prev" class="icon-prev"></i>
@@ -97,8 +97,11 @@
   import {mapGetters, mapMutations} from 'vuex';
   import animations from 'create-keyframe-animation';
   import {prefixStyle} from 'common/js/dom.js';
+  import {playMode} from 'common/js/config.js';
+  import {shuffle} from 'common/js/util.js';
   import PregressBar from 'base/pregress-bar/pregress-bar.vue';
   import ProgressCircle from 'base/progress-circle/progress-circle.vue';
+
 
   const transform = prefixStyle('transform');
   export default {
@@ -106,11 +109,14 @@
       return {
         songReady: false, // 标志位，标识歌曲的 切换/请求 是否已经完成。（节流阀）
         currentTime: 0,
-        radius:32
+        radius: 32
       }
     },
     watch: {
-      currentSong() {
+      currentSong(newSong, oldSong) {
+        if (newSong.id === oldSong) {
+          return;
+        }
         this.$nextTick(() => {
           this.$refs.audio.play();
         })
@@ -123,6 +129,28 @@
       }
     },
     methods: {
+      // 修改播放模式
+      changeMode() {
+        const mode = (this.mode + 1) % 3;
+        this.setPlayMode(mode);
+        let list = null;
+        if (mode === playMode.random) {
+          list = shuffle(this.sequenceList);
+          this.setPlayList(list);
+          this.resetCurrentIndex(list);
+        } else {
+          list = this.sequenceList;
+        }
+        this.resetCurrentIndex(list);
+        this.setPlayList(list);
+      },
+      //
+      resetCurrentIndex(list) {
+        let index = list.findIndex((item) => {
+          return item.id === this.currentSong.id;
+        })
+        this.setCurrentIndex(index);
+      },
       // 响应子组件的传递过来的事件监听处理函数
       onProgressBarChange(percent) {
         this.$refs.audio.currentTime = this.currentSong.duration * percent;
@@ -260,10 +288,16 @@
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
         setPlayIng: 'SET_PLAYING_STAET',
-        setCurrentIndex: 'SET_CURRENT_INDEX'
+        setCurrentIndex: 'SET_CURRENT_INDEX',
+        setPlayMode: 'SET_PLAY_MODE',
+        setPlayList: 'SET_PLAYLIST'
       })
     },
     computed: {
+      iconMode() {
+        return this.mode === playMode.sequence ? 'icon-sequence' :
+          this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
+      },
       percent() {
         return this.currentTime / this.currentSong.duration;
       },
@@ -285,7 +319,9 @@
         'playList',
         'currentSong',
         'playing',
-        'currentIndex'
+        'currentIndex',
+        'mode',
+        'sequenceList'
       ])
     },
     components: {
