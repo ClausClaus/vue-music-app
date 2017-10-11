@@ -35,7 +35,9 @@
         <div class="bottom">
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
-            <div class="progress-bar-wrapper"></div>
+            <div class="progress-bar-wrapper">
+              <pregress-bar :percent="percent"></pregress-bar>
+            </div>
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
           <div class="operators">
@@ -90,6 +92,7 @@
   import {mapGetters, mapMutations} from 'vuex';
   import animations from 'create-keyframe-animation';
   import {prefixStyle} from 'common/js/dom.js';
+  import PregressBar from 'base/pregress-bar/pregress-bar.vue';
 
   const transform = prefixStyle('transform');
   export default {
@@ -119,7 +122,7 @@
       },
       format(interval) {
         interval = interval | 0;
-        console.log(interval);
+//        console.log(interval);
         const minute = interval / 60 | 0;
         const second = this._pad(interval % 60);
         return `${minute}:${second}`;
@@ -247,6 +250,9 @@
       })
     },
     computed: {
+      percent() {
+        return this.currentTime / this.currentSong.duration;
+      },
       cdClass() {
         return this.playing ? 'play' : 'play pause';
       },
@@ -267,6 +273,9 @@
         'playing',
         'currentIndex'
       ])
+    },
+    components: {
+      PregressBar
     }
 
   }
