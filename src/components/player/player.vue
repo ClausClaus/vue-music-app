@@ -36,7 +36,9 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
             <div class="progress-bar-wrapper">
-              <pregress-bar :percent="percent"></pregress-bar>
+              <pregress-bar
+                :percent="percent"
+                @percentChange="onProgressBarChange"></pregress-bar>
             </div>
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
@@ -116,6 +118,13 @@
       }
     },
     methods: {
+      // 响应子组件的传递过来的事件监听处理函数
+      onProgressBarChange(percent) {
+        this.$refs.audio.currentTime = this.currentSong.duration * percent;
+        if (!this.playing) {
+          this.togglePlaying();
+        }
+      },
       // 歌曲的当前播放时间
       updateTime(e) {
         this.currentTime = e.target.currentTime;
