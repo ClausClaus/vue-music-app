@@ -89,7 +89,8 @@
            :src="currentSong.url"
            @canplay="ready"
            @error="error"
-           @timeupdate="updateTime"></audio>
+           @timeupdate="updateTime"
+           @ended="end"></audio>
   </div>
 </template>
 
@@ -162,20 +163,18 @@
       updateTime(e) {
         this.currentTime = e.target.currentTime;
       },
-      format(interval) {
-        interval = interval | 0;
-//        console.log(interval);
-        const minute = interval / 60 | 0;
-        const second = this._pad(interval % 60);
-        return `${minute}:${second}`;
-      },
-      _pad(num, n = 2) {
-        let len = num.toString().length;
-        while (len < n) {
-          num = '0' + num;
-          len++;
+      // 歌曲播放完毕自动跳到下一首
+      end() {
+        if (this.mode === playMode.loop) {
+          this.loop();
+        } else {
+          this.next();
         }
-        return num;
+      },
+      // 单曲循环模式
+      loop() {
+        this.$refs.audio.currentTime = 0;
+        this.$refs.audio.play();
       },
       // 歌曲已经切换完毕
       ready() {
@@ -267,6 +266,21 @@
       normalAfterLeave() {
         this.$refs.cdWrapper.style.transition = '';
         this.$refs.cdWrapper.style.transform = '';
+      },
+      format(interval) {
+        interval = interval | 0;
+//        console.log(interval);
+        const minute = interval / 60 | 0;
+        const second = this._pad(interval % 60);
+        return `${minute}:${second}`;
+      },
+      _pad(num, n = 2) {
+        let len = num.toString().length;
+        while (len < n) {
+          num = '0' + num;
+          len++;
+        }
+        return num;
       },
       // 动画函数辅助函数
       _getPosAndScale() {
