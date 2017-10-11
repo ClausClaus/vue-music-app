@@ -74,7 +74,10 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <i :class="miniIcon" @click.stop.prevent="togglePlaying"></i>
+          <progress-circle :radius="radius"
+                           :percent="percent">
+            <i :class="miniIcon" class="icon-mini" @click.stop.prevent="togglePlaying"></i>
+          </progress-circle>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
@@ -95,13 +98,15 @@
   import animations from 'create-keyframe-animation';
   import {prefixStyle} from 'common/js/dom.js';
   import PregressBar from 'base/pregress-bar/pregress-bar.vue';
+  import ProgressCircle from 'base/progress-circle/progress-circle.vue';
 
   const transform = prefixStyle('transform');
   export default {
     data() {
       return {
         songReady: false, // 标志位，标识歌曲的 切换/请求 是否已经完成。（节流阀）
-        currentTime: 0
+        currentTime: 0,
+        radius:32
       }
     },
     watch: {
@@ -284,7 +289,8 @@
       ])
     },
     components: {
-      PregressBar
+      PregressBar,
+      ProgressCircle
     }
 
   }
