@@ -120,6 +120,7 @@
         }
         this.$nextTick(() => {
           this.$refs.audio.play();
+          this.currentSong.getLyric();
         })
       },
       playing(newPlaying) {

@@ -1,7 +1,10 @@
+import {getLyric} from "api/song";
+import {ERR_OK} from "api/config";
+
 export default class Song {
   /**
    * Creates an instance of Song.
-   * @param {any} { id, mid, singer, name, album, duration, image, url } 
+   * @param {any} { id, mid, singer, name, album, duration, image, url }
    * @memberof Song
    * id [ 歌曲id ]
    * mid [ 歌曲的mid ]
@@ -12,7 +15,7 @@ export default class Song {
    * image [ 歌曲图片 ]
    * url [ 歌曲的请求地址 ]
    */
-  constructor({ id, mid, singer, name, album, duration, image, url }) {
+  constructor({id, mid, singer, name, album, duration, image, url}) {
     this.id = id;
     this.mid = mid;
     this.singer = singer;
@@ -22,13 +25,25 @@ export default class Song {
     this.image = image;
     this.url = url;
   }
+  /*
+  *   通过ajax请求歌词数据，存入到歌曲类对象中，实例化时被继承
+  * */
+  getLyric() {
+    getLyric(this.mid).then((res) => {
+      if (res.retcode === ERR_OK) {
+        this.lyric = res.lyric;
+        // console.log(this.lyric);
+      }
+    })
+  }
 }
+
 /**
  * 歌曲工厂实例
- * 
+ *
  * @export
- * @param {any} musicData 
- * @returns 
+ * @param {any} musicData
+ * @returns
  */
 export function createSong(musicData) {
   return new Song({
@@ -42,6 +57,7 @@ export function createSong(musicData) {
     url: `http://ws.stream.qqmusic.qq.com/${musicData.songid}.m4a?fromtag=46`,
   })
 }
+
 function filterSinger(singer) {
   let ret = [];
   if (!singer) {

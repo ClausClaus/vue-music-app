@@ -24,11 +24,12 @@ var proxyTable = config.dev.proxyTable
 var app = express()
 
 /* 自定义代理请求 start */
-var apiRoutes = express.Router();
 var recommend = require('./middleware/recommend');
 var singer = require('./middleware/singer');
+var song = require('./middleware/song');
 app.use('/api', singer);
 app.use('/api', recommend);
+app.use('/api', song);
 /* 自定义代理请求 end */
 var compiler = webpack(webpackConfig)
 
@@ -44,7 +45,7 @@ var hotMiddleware = require('webpack-hot-middleware')(compiler, {
 // force page reload when html-webpack-plugin template changes
 compiler.plugin('compilation', function (compilation) {
   compilation.plugin('html-webpack-plugin-after-emit', function (data, cb) {
-    hotMiddleware.publish({ action: 'reload' })
+    hotMiddleware.publish({action: 'reload'})
     cb()
   })
 })
@@ -53,7 +54,7 @@ compiler.plugin('compilation', function (compilation) {
 Object.keys(proxyTable).forEach(function (context) {
   var options = proxyTable[context]
   if (typeof options === 'string') {
-    options = { target: options }
+    options = {target: options}
   }
   app.use(proxyMiddleware(options.filter || context, options))
 })
