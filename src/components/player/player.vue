@@ -96,6 +96,7 @@
 
 <script type="text/ecmascript-6">
   import {mapGetters, mapMutations} from 'vuex';
+  import Lyric from 'lyric-parser'; // 歌词解析包
   import animations from 'create-keyframe-animation';
   import {prefixStyle} from 'common/js/dom.js';
   import {playMode} from 'common/js/config.js';
@@ -110,7 +111,8 @@
       return {
         songReady: false, // 标志位，标识歌曲的 切换/请求 是否已经完成。（节流阀）
         currentTime: 0,
-        radius: 32
+        radius: 32,
+        currentLyric: null
       }
     },
     watch: {
@@ -120,7 +122,7 @@
         }
         this.$nextTick(() => {
           this.$refs.audio.play();
-          this.currentSong.getLyric();
+          this.getLyric();
         })
       },
       playing(newPlaying) {
@@ -131,6 +133,13 @@
       }
     },
     methods: {
+      // 歌词数据解析
+      getLyric() {
+        this.currentSong.getLyric().then((lyric) => {
+          this.currentLyric = new Lyric(lyric);
+          console.log(this.currentLyric);
+        })
+      },
       // 修改播放模式
       changeMode() {
         const mode = (this.mode + 1) % 3;
