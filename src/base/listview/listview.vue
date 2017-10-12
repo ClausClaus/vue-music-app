@@ -1,5 +1,5 @@
 <template>
-  <scroll ref="listview" class="listview" :data="data" :listenScroll="listenScroll" :probeType="probeType" @scroll="scroll">
+  <scroll ref="listview" class="listview listview-container" :data="data" :listenScroll="listenScroll" :probeType="probeType" @scroll="scroll">
     <ul class="list-group">
       <li v-for="(group,index) in data" :key="index" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
@@ -158,7 +158,7 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
 
-  .listview
+  .listview,.listview-container
     position: relative
     width: 100%
     height: 100%

@@ -24,8 +24,8 @@ export const selectPlay = function ({commit, state}, {list, index}) {
   if (state.mode === playMode.random) {
     let randomList = shuffle(list);
     commit(types.SET_PLAYLIST, randomList);
-    index = findIndex(randomList, list[index])
-  }else {
+    index = findIndex(randomList, list[index]);
+  } else {
     commit(types.SET_PLAYLIST, list);
   }
   commit(types.SET_CURRENT_INDEX, index);

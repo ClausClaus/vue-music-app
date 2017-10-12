@@ -36,7 +36,7 @@
       progressClick(e){
         const rect = this.$refs.progressBar.getBoundingClientRect();
         const offsetX = e.pageX - rect.left;
-        this._offset(offsetX)
+        this._offset(offsetX);
         // this._offset(e.offsetX);
         this._triggerPercent();
       },
