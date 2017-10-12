@@ -22,6 +22,7 @@
         <!-- 顶部的返回按钮与标题 end -->
         <!-- 中间旋转的图片 start -->
         <div class="middle">
+          <!-- 歌曲大图片 start -->
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" :class="cdClass">
@@ -29,6 +30,19 @@
               </div>
             </div>
           </div>
+          <!-- 歌曲大图片 end -->
+          <!-- 歌词列表 start -->
+          <scroll :data="currentLyric && currentLyric.lines" class="middle-r" ref="lyricList">
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric">
+                <p class="text" ref="lyricLine" v-for="(line,index) in currentLyric.lines"
+                   :class="{'current':currentLineNum === index}">
+                  {{line.txt}}
+                </p>
+              </div>
+            </div>
+          </scroll>
+          <!-- 歌词列表 end -->
         </div>
         <!-- 中间旋转的图片 end -->
         <!-- 大播放器底部的按钮 start -->
@@ -103,6 +117,7 @@
   import {shuffle} from 'common/js/util.js';
   import PregressBar from 'base/pregress-bar/pregress-bar.vue';
   import ProgressCircle from 'base/progress-circle/progress-circle.vue';
+  import Scroll from 'base/scroll/scroll.vue';
 
 
   const transform = prefixStyle('transform');
@@ -112,7 +127,8 @@
         songReady: false, // 标志位，标识歌曲的 切换/请求 是否已经完成。（节流阀）
         currentTime: 0,
         radius: 32,
-        currentLyric: null
+        currentLyric: null,
+        currentLineNum: 0
       }
     },
     watch: {
@@ -136,9 +152,22 @@
       // 歌词数据解析
       getLyric() {
         this.currentSong.getLyric().then((lyric) => {
-          this.currentLyric = new Lyric(lyric);
+          this.currentLyric = new Lyric(lyric, this.handleLyric);
+          if (this.playing) {
+            this.currentLyric.play();
+          }
           console.log(this.currentLyric);
         })
+      },
+      // 设置歌词当前行高亮效果
+      handleLyric({lineNum, txt}) {
+        this.currentLineNum = lineNum;
+        if (lineNum > 5) {
+          let lineEl = this.$refs.lyricLine[lineNum - 5];
+          this.$refs.lyricList.scrollToElement(lineEl, 1000);
+        } else {
+          this.$refs.lyricList.scrollTo(0, 0, 1000);
+        }
       },
       // 修改播放模式
       changeMode() {
@@ -350,7 +379,8 @@
     },
     components: {
       PregressBar,
-      ProgressCircle
+      ProgressCircle,
+      Scroll
     }
 
   }
@@ -468,6 +498,7 @@
               line-height: 32px
               color: $color-text-l
               font-size: $font-size-medium
+              transition: color .2s linear
               &.current
                 color: $color-text
       .bottom
