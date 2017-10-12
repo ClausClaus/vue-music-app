@@ -35,54 +35,61 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-import Loading from 'base/loading/loading.vue';
-import Slider from 'base/slider/slider.vue';
-import Scroll from 'base/scroll/scroll.vue';
-import { getRecommend, getDiscList } from "api/recommend.js";
-import { ERR_OK } from "api/config.js";
+  import Loading from 'base/loading/loading.vue';
+  import Slider from 'base/slider/slider.vue';
+  import Scroll from 'base/scroll/scroll.vue';
+  import {getRecommend, getDiscList} from "api/recommend.js";
+  import {playListMixin} from 'common/js/mixin.js';
+  import {ERR_OK} from "api/config.js";
 
-export default {
-  data() {
-    return {
-      recommends: [],
-      discList: []
-    }
-  },
-  created() {
-    this._getRecommend();
-    this._getDiscList();
-  },
-  components: {
-    Slider,
-    Scroll,
-    Loading
-  },
-  methods: {
-    // 获取轮播图数据
-    _getRecommend() {
-      getRecommend().then((res) => {
-        if (res.code === ERR_OK) {
-          this.recommends = res.data.slider;
-        }
-      })
+  export default {
+    mixins: [playListMixin],
+    data() {
+      return {
+        recommends: [],
+        discList: []
+      }
     },
-    // 获取歌单列表数据
-    _getDiscList() {
-      getDiscList().then((res) => {
-        if (res.code === ERR_OK) {
-          this.discList = res.data.list;
-        }
-      })
+    created() {
+      this._getRecommend();
+      this._getDiscList();
     },
-    /** 保证轮播图组件的高度已经被撑开，调用滚动组件的refersh方法重新计算需要滚动的高度 */
-    loadImage() {
-      if (!this.checkLoaded) {
+    components: {
+      Slider,
+      Scroll,
+      Loading
+    },
+    methods: {
+      handlePlayList(playlist) {
+        const bottom = playlist.length > 0 ? '60px' : '';
+        this.$refs.recommend.style.bottom = bottom;
         this.$refs.scroll.refresh();
-        this.checkLoaded = true;
+      },
+      // 获取轮播图数据
+      _getRecommend() {
+        getRecommend().then((res) => {
+          if (res.code === ERR_OK) {
+            this.recommends = res.data.slider;
+          }
+        })
+      },
+      // 获取歌单列表数据
+      _getDiscList() {
+        getDiscList().then((res) => {
+          if (res.code === ERR_OK) {
+            this.discList = res.data.list;
+          }
+        })
+      },
+      /** 保证轮播图组件的高度已经被撑开，调用滚动组件的refersh方法重新计算需要滚动的高度 */
+      loadImage() {
+        if (!this.checkLoaded) {
+          this.$refs.scroll.refresh();
+          this.checkLoaded = true;
+        }
       }
     }
   }
-}
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">

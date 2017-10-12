@@ -1,5 +1,6 @@
 <template>
-  <scroll ref="listview" class="listview listview-container" :data="data" :listenScroll="listenScroll" :probeType="probeType" @scroll="scroll">
+  <scroll ref="listview" class="listview listview-container" :data="data" :listenScroll="listenScroll"
+          :probeType="probeType" @scroll="scroll">
     <ul class="list-group">
       <li v-for="(group,index) in data" :key="index" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
@@ -11,9 +12,12 @@
         </ul>
       </li>
     </ul>
-    <div class="list-shortcut" @touchstart="onShortcutTouchStart($event)" @touchmove.stop.prevent="onShortcutTouchMove($event)">
+    <div class="list-shortcut" @touchstart="onShortcutTouchStart($event)"
+         @touchmove.stop.prevent="onShortcutTouchMove($event)">
       <ul>
-        <li class="item" v-for="(item,index) in shortcutList" :key="index" :data-index="index" :class="{'current':currentIndex === index}">{{item}}</li>
+        <li class="item" v-for="(item,index) in shortcutList" :key="index" :data-index="index"
+            :class="{'current':currentIndex === index}">{{item}}
+        </li>
       </ul>
     </div>
     <div class="list-fixed" v-show="fixedTitle" ref="fixed">
@@ -26,139 +30,143 @@
 </template>
 
 <script type="text/ecmascript-6">
-import Scroll from 'base/scroll/scroll.vue';
-import Loading from 'base/loading/loading.vue';
-import { getData } from 'common/js/dom.js';
-const ANCHOR_HEIGHT = 18; // 每个字母的高度
-const TITLE_HEIGHT = 30;
-export default {
-  data() {
-    return {
-      scrollY: -1,
-      currentIndex: 0,
-      probeType: 3,
-      diff: -1
-    }
-  },
-  created() {
-    // 不让vue添加get与set。
-    this.touch = {};
-    this.listenScroll = true;
-    this.listHeight = []
-  },
-  methods: {
-    selectItem(item) {
-      this.$emit('select', item);
-    },
-    onShortcutTouchStart(e) {
-      let anchorIndex = getData(e.target, 'index');
-      let firstTouch = e.touches[0];
-      this.touch.y1 = firstTouch.pageY;
-      this.touch.anchorIndex = anchorIndex;
-      this._scrollToElement(anchorIndex);
-    },
-    onShortcutTouchMove(e) {
-      let firstTouch = e.touches[0];
-      this.touch.y2 = firstTouch.pageY;
-      let delta = Math.floor((this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT);
-      let anchorIndex = parseInt(this.touch.anchorIndex + delta);
-      this._scrollToElement(anchorIndex);
-    },
-    // 响应子组件发射过来的事件
-    scroll(pos) {
-      this.scrollY = pos.y;
-    },
-    /** @argument index [滚动到指定位置的目标元素] */
-    _scrollToElement(index) {
-      if (!index && index !== 0) {
-        return;
-      }
-      if (index < 0) {
-        index = 0;
-      } else if (index > this.listHeight.length - 2) {
-        index = this.listHeight.length - 2;
-      }
-      this.scrollY = -this.listHeight[index];
-      this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0);
-    },
-    _calculateHeight() {
-      this.listHeight = [];
-      const list = this.$refs.listGroup;
-      let height = 0;
-      this.listHeight.push(height);
-      for (var i = 0; i < list.length; i++) {
-        var item = list[i];
-        height += item.clientHeight;
-        this.listHeight.push(height);
-        // console.log(this.listHeight);
-      }
-    }
-  },
-  watch: {
+  import Scroll from 'base/scroll/scroll.vue';
+  import Loading from 'base/loading/loading.vue';
+  import {getData} from 'common/js/dom.js';
+
+  const ANCHOR_HEIGHT = 18; // 每个字母的高度
+  const TITLE_HEIGHT = 30;
+  export default {
     data() {
-      setTimeout(() => {
-        this._calculateHeight();
-      }, 20)
-    },
-    scrollY(newY) {
-      const listHeight = this.listHeight;
-      // 当滚动到顶部，newY > 0
-      if (newY > 0) {
-        this.currentIndex = 0;
-        return;
+      return {
+        scrollY: -1,
+        currentIndex: 0,
+        probeType: 3,
+        diff: -1
       }
-      // 在中间部分滚动
-      for (var i = 0; i < listHeight.length; i++) {
-        let height1 = listHeight[i];
-        let height2 = listHeight[i + 1];
-        if (-newY >= height1 && -newY < height2) {
-          this.currentIndex = i;
-          this.diff = height2 + newY;
+    },
+    created() {
+      // 不让vue添加get与set。
+      this.touch = {};
+      this.listenScroll = true;
+      this.listHeight = []
+    },
+    methods: {
+      refresh() {
+        this.$refs.listview.refresh();
+      },
+      selectItem(item) {
+        this.$emit('select', item);
+      },
+      onShortcutTouchStart(e) {
+        let anchorIndex = getData(e.target, 'index');
+        let firstTouch = e.touches[0];
+        this.touch.y1 = firstTouch.pageY;
+        this.touch.anchorIndex = anchorIndex;
+        this._scrollToElement(anchorIndex);
+      },
+      onShortcutTouchMove(e) {
+        let firstTouch = e.touches[0];
+        this.touch.y2 = firstTouch.pageY;
+        let delta = Math.floor((this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT);
+        let anchorIndex = parseInt(this.touch.anchorIndex + delta);
+        this._scrollToElement(anchorIndex);
+      },
+      // 响应子组件发射过来的事件
+      scroll(pos) {
+        this.scrollY = pos.y;
+      },
+      /** @argument index [滚动到指定位置的目标元素] */
+      _scrollToElement(index) {
+        if (!index && index !== 0) {
           return;
         }
+        if (index < 0) {
+          index = 0;
+        } else if (index > this.listHeight.length - 2) {
+          index = this.listHeight.length - 2;
+        }
+        this.scrollY = -this.listHeight[index];
+        this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0);
+      },
+      _calculateHeight() {
+        this.listHeight = [];
+        const list = this.$refs.listGroup;
+        let height = 0;
+        this.listHeight.push(height);
+        for (var i = 0; i < list.length; i++) {
+          var item = list[i];
+          height += item.clientHeight;
+          this.listHeight.push(height);
+          // console.log(this.listHeight);
+        }
       }
-      // 当滚动到底部，且-newY大于最后一个元素的上限
-      this.currentIndex = listHeight.length - 2;
     },
-    diff(newVal) {
-      let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0;
-      if (this.fixedTop === fixedTop) {
-        return;
+    watch: {
+      data() {
+        setTimeout(() => {
+          this._calculateHeight();
+        }, 20)
+      },
+      scrollY(newY) {
+        const listHeight = this.listHeight;
+        // 当滚动到顶部，newY > 0
+        if (newY > 0) {
+          this.currentIndex = 0;
+          return;
+        }
+        // 在中间部分滚动
+        for (var i = 0; i < listHeight.length; i++) {
+          let height1 = listHeight[i];
+          let height2 = listHeight[i + 1];
+          if (-newY >= height1 && -newY < height2) {
+            this.currentIndex = i;
+            this.diff = height2 + newY;
+            return;
+          }
+        }
+        // 当滚动到底部，且-newY大于最后一个元素的上限
+        this.currentIndex = listHeight.length - 2;
+      },
+      diff(newVal) {
+        let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0;
+        if (this.fixedTop === fixedTop) {
+          return;
+        }
+        this.fixedTop = fixedTop;
+        this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`
       }
-      this.fixedTop = fixedTop;
-      this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`
-    }
-  },
-  computed: {
-    shortcutList() {
-      return this.data.map((group) => {
-        return group.title.substr(0, 1);
-      })
     },
-    fixedTitle() {
-      if (this.scrollY > 0) {
-        return '';
+    computed: {
+      shortcutList() {
+        return this.data.map((group) => {
+          return group.title.substr(0, 1);
+        })
+      },
+      fixedTitle() {
+        if (this.scrollY > 0) {
+          return '';
+        }
+        return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
       }
-      return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
-    }
-  },
-  components: {
-    Scroll,
-    Loading
-  },
-  props: {
-    data: {
-      type: Array,
-      default: []
+    },
+    components: {
+      Scroll,
+      Loading
+    },
+    props: {
+      data: {
+        type: Array,
+        default: []
+      }
     }
   }
-}
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
 
-  .listview,.listview-container
+  .listview, .listview-container
     position: relative
     width: 100%
     height: 100%

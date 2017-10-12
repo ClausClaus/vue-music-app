@@ -33,6 +33,7 @@
 
 <script type="text/ecmascript-6">
   import {mapActions} from 'vuex';
+  import {playListMixin} from 'common/js/mixin.js';
   import SongList from 'base/song-list/song-list.vue';
   import Scroll from 'base/scroll/scroll.vue';
   import Loading from 'base/loading/loading.vue';
@@ -42,6 +43,7 @@
   const transform = prefixStyle('transform');
   const backdrop = prefixStyle('backdrop-filter');
   export default {
+    mixins: [playListMixin],
     data() {
       return {
         scrollY: 0
@@ -52,6 +54,12 @@
       this.listenScroll = true
     },
     methods: {
+      //
+      handlePlayList(playlist) {
+        const bottom = playlist.length > 0 ? '60px' : '';
+        this.$refs.list.$el.style.bottom = bottom;
+        this.$refs.list.refresh();
+      },
       // 随机播放按钮事件
       random() {
         this.randomPlay({

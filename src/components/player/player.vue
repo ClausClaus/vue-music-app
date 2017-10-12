@@ -33,6 +33,9 @@
                 <img class="image" :src="currentSong.image">
               </div>
             </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{playingLyric}}</div>
+            </div>
           </div>
           <!-- 歌曲大图片 end -->
           <!-- 歌词列表 start -->
@@ -58,9 +61,9 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
             <div class="progress-bar-wrapper">
-              <pregress-bar
+              <progress-bar
                 :percent="percent"
-                @percentChange.stop.prevent="onProgressBarChange"></pregress-bar>
+                @percentChange="onProgressBarChange"></progress-bar>
             </div>
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
@@ -123,7 +126,7 @@
   import {prefixStyle} from 'common/js/dom.js';
   import {playMode} from 'common/js/config.js';
   import {shuffle} from 'common/js/util.js';
-  import PregressBar from 'base/pregress-bar/pregress-bar.vue';
+  import ProgressBar from 'base/progress-bar/progress-bar.vue';
   import ProgressCircle from 'base/progress-circle/progress-circle.vue';
   import Scroll from 'base/scroll/scroll.vue';
 
@@ -138,7 +141,8 @@
         radius: 32,
         currentLyric: null,
         currentLineNum: 0,
-        currentShow: 'cd'
+        currentShow: 'cd',
+        playingLyric: ''
       }
     },
     created() {
@@ -207,7 +211,10 @@
           if (this.playing) {
             this.currentLyric.play();
           }
-//          console.log(this.currentLyric);
+        }).catch(() => {
+          this.currentLyric = null;
+          this.playingLyric = '';
+          this.currentLineNum = 0;
         })
       },
       // 设置歌词当前行高亮效果
@@ -219,6 +226,7 @@
         } else {
           this.$refs.lyricList.scrollTo(0, 0, 1000);
         }
+        this.playingLyric = txt;
       },
       // 修改播放模式
       changeMode() {
@@ -242,11 +250,15 @@
         })
         this.setCurrentIndex(index);
       },
-      // 响应子组件的传递过来的事件监听处理函数
+      // 进度条滑动事件，子组件监听并发射，父组件响应事件处理
       onProgressBarChange(percent) {
+        const currentTime = this.currentSong.duration * percent;
         this.$refs.audio.currentTime = this.currentSong.duration * percent;
         if (!this.playing) {
           this.togglePlaying();
+        }
+        if (this.currentLyric) {
+          this.currentLyric.seek(currentTime * 1000);
         }
       },
       // 歌曲的当前播放时间
@@ -265,6 +277,9 @@
       loop() {
         this.$refs.audio.currentTime = 0;
         this.$refs.audio.play();
+        if (this.currentLyric) {
+          this.currentLyric.seek(0);
+        }
       },
       // 歌曲已经切换完毕
       ready() {
@@ -279,13 +294,17 @@
         if (!this.songReady) {
           return;
         }
-        let index = this.currentIndex - 1;
-        if (index === -1) {
-          index = this.playList.length - 1;
-        }
-        this.setCurrentIndex(index);
-        if (!this.playing) {
-          this.togglePlaying();
+        if (this.playList.length === 1) {
+          this.loop();
+        } else {
+          let index = this.currentIndex - 1;
+          if (index === -1) {
+            index = this.playList.length - 1;
+          }
+          this.setCurrentIndex(index);
+          if (!this.playing) {
+            this.togglePlaying();
+          }
         }
         this.songReady = false;
       },
@@ -294,13 +313,17 @@
         if (!this.songReady) {
           return;
         }
-        let index = this.currentIndex + 1;
-        if (index === this.playList.length) {
-          index = 0;
-        }
-        this.setCurrentIndex(index);
-        if (!this.playing) {
-          this.togglePlaying();
+        if (this.playList.length === 1) {
+          this.loop();
+        } else {
+          let index = this.currentIndex + 1;
+          if (index === this.playList.length) {
+            index = 0;
+          }
+          this.setCurrentIndex(index);
+          if (!this.playing) {
+            this.togglePlaying();
+          }
         }
         this.songReady = false;
       },
@@ -310,6 +333,9 @@
           return;
         }
         this.setPlayIng(!this.playing);
+        if (this.currentLyric) {
+          this.currentLyric.togglePlay();
+        }
       },
       // 关闭大播放器
       back() {
@@ -402,10 +428,13 @@
         if (newSong.id === oldSong.id) {
           return;
         }
-        this.$nextTick(() => {
+        if (this.currentLyric) {
+          this.currentLyric.stop();
+        }
+        setTimeout(() => {
           this.$refs.audio.play();
           this.getLyric();
-        })
+        }, 1000)
       },
       playing(newPlaying) {
         this.$nextTick(() => {
@@ -446,7 +475,7 @@
       ])
     },
     components: {
-      PregressBar,
+      ProgressBar,
       ProgressCircle,
       Scroll
     }
