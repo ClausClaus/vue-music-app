@@ -21,9 +21,13 @@
         </div>
         <!-- 顶部的返回按钮与标题 end -->
         <!-- 中间旋转的图片 start -->
-        <div class="middle">
+        <div class="middle"
+             @touchstart.stop.prevent="middleTouchStart"
+             @touchmove.stop.prevent="middleTouchMove"
+             @touchend.stop.prevent="middleTouchEnd"
+        >
           <!-- 歌曲大图片 start -->
-          <div class="middle-l">
+          <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" :class="cdClass">
                 <img class="image" :src="currentSong.image">
@@ -47,12 +51,16 @@
         <!-- 中间旋转的图片 end -->
         <!-- 大播放器底部的按钮 start -->
         <div class="bottom">
+          <div class="dot-wrapper">
+            <span class="dot" :class="{'active':currentShow === 'cd'}"></span>
+            <span class="dot" :class="{'active':currentShow === 'lyric'}"></span>
+          </div>
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
             <div class="progress-bar-wrapper">
               <pregress-bar
                 :percent="percent"
-                @percentChange="onProgressBarChange"></pregress-bar>
+                @percentChange.stop.prevent="onProgressBarChange"></pregress-bar>
             </div>
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
@@ -121,6 +129,7 @@
 
 
   const transform = prefixStyle('transform');
+  const transitionDuration = prefixStyle('transitionDuration');
   export default {
     data() {
       return {
@@ -128,27 +137,69 @@
         currentTime: 0,
         radius: 32,
         currentLyric: null,
-        currentLineNum: 0
+        currentLineNum: 0,
+        currentShow: 'cd'
       }
     },
-    watch: {
-      currentSong(newSong, oldSong) {
-        if (newSong.id === oldSong.id) {
-          return;
-        }
-        this.$nextTick(() => {
-          this.$refs.audio.play();
-          this.getLyric();
-        })
-      },
-      playing(newPlaying) {
-        this.$nextTick(() => {
-          const audio = this.$refs.audio;
-          newPlaying ? audio.play() : audio.pause();
-        })
-      }
+    created() {
+      this.touch = {};
     },
     methods: {
+      middleTouchStart(e) {
+        this.touch.initiated = true;
+        const touch = e.touches[0];
+        this.touch.startX = touch.pageX;
+        this.touch.startY = touch.pageY;
+      },
+      middleTouchMove(e) {
+        if (!this.touch.initiated) {
+          return;
+        }
+        const touch = e.touches[0];
+        const deltaX = touch.pageX - this.touch.startX;
+        const deltaY = touch.pageY - this.touch.startY;
+        if (Math.abs(deltaY) > Math.abs(deltaX)) {
+          return;
+        }
+        const left = this.currentShow === 'cd' ? 0 : -window.innerWidth;
+        const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX));
+        this.touch.percent = Math.abs(offsetWidth / window.innerWidth);
+        this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`;
+        this.$refs.lyricList.$el.style[transitionDuration] = 0;
+        this.$refs.middleL.style.opacity = 1 - this.touch.percent;
+        this.$refs.middleL.style[transitionDuration] = 0;
+      },
+      middleTouchEnd(e) {
+        let offsetWidth;
+        let opacity = 0;
+        // 从 右向左 滑动，超过百分之10就滑动
+        if (this.currentShow === 'cd') {
+          if (this.touch.percent > 0.1) {
+            offsetWidth = -window.innerWidth;
+            opacity = 0;
+            this.currentShow = 'lyric';
+          } else {
+            offsetWidth = 0;
+            opacity = 1;
+          }
+        }
+        // 从 左向右 滑动，超过百分之10就滑动
+        else {
+          if (this.touch.percent < 0.9) {
+            offsetWidth = 0;
+            opacity = 1;
+            this.currentShow = 'cd';
+          } else {
+            offsetWidth = -window.innerWidth;
+            opacity = 0;
+          }
+        }
+        const time = 300;
+        this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`;
+        this.$refs.lyricList.$el.style[transitionDuration] = `${time}ms`;
+        this.$refs.middleL.style.opacity = opacity;
+        this.$refs.middleL.style[transitionDuration] = `${time}ms`;
+      },
       // 歌词数据解析
       getLyric() {
         this.currentSong.getLyric().then((lyric) => {
@@ -156,7 +207,7 @@
           if (this.playing) {
             this.currentLyric.play();
           }
-          console.log(this.currentLyric);
+//          console.log(this.currentLyric);
         })
       },
       // 设置歌词当前行高亮效果
@@ -345,6 +396,23 @@
         setPlayMode: 'SET_PLAY_MODE',
         setPlayList: 'SET_PLAYLIST'
       })
+    },
+    watch: {
+      currentSong(newSong, oldSong) {
+        if (newSong.id === oldSong.id) {
+          return;
+        }
+        this.$nextTick(() => {
+          this.$refs.audio.play();
+          this.getLyric();
+        })
+      },
+      playing(newPlaying) {
+        this.$nextTick(() => {
+          const audio = this.$refs.audio;
+          newPlaying ? audio.play() : audio.pause();
+        })
+      }
     },
     computed: {
       iconMode() {
