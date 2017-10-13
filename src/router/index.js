@@ -1,6 +1,6 @@
 /*
- * @Author: Smile 
- * @Date: 2017-10-02 22:57:41 
+ * @Author: Smile
+ * @Date: 2017-10-02 22:57:41
  * @Last Modified by: Smile
  * @Last Modified time: 2017-10-08 15:00:16
  */
@@ -11,21 +11,49 @@ import Singer from 'components/singer/singer'
 import Rank from 'components/rank/rank'
 import Search from 'components/search/search'
 import SingerDetail from 'components/singer-detail/singer-detail';
+import Disc from 'components/disc/disc.vue';
+
 Vue.use(Router)
 
 export default new Router({
   routes: [
-    { path: '/', redirect: { path: '/recommend', } },
-    { path: '/recommend', name: 'recommend', component: Recommend },
     {
-      path: '/singer', name: 'singer', component: Singer, children: [
+      path: '/',
+      redirect: {
+        path: '/recommend',
+      }
+    },
+    {
+      path: '/recommend',
+      name: 'recommend',
+      component: Recommend,
+      children: [
+        {
+          path: ':id',
+          component: Disc
+        }
+      ]
+    },
+    {
+      path: '/singer',
+      name: 'singer',
+      component: Singer,
+      children: [
         {
           path: ':id',
           component: SingerDetail
         }
       ]
     },
-    { path: '/rank', name: 'rank', component: Rank },
-    { path: '/search', name: 'search', component: Search }
+    {
+      path: '/rank',
+      name: 'rank',
+      component: Rank
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: Search
+    }
   ]
 })

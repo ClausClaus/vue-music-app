@@ -27,9 +27,11 @@ var app = express()
 var recommend = require('./middleware/recommend');
 var singer = require('./middleware/singer');
 var song = require('./middleware/song');
+var songAlbum = require('./middleware/songalbum');
 app.use('/api', singer);
 app.use('/api', recommend);
 app.use('/api', song);
+app.use('/api', songAlbum);
 /* 自定义代理请求 end */
 var compiler = webpack(webpackConfig)
 
