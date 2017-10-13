@@ -1,27 +1,69 @@
 <template>
   <div class="rank rank-container" ref="rank">
-    <div class="toplist">
+    <scroll :data="topList" class="toplist" ref="toplist">
       <ul>
-        <li class="item">
+        <li class="item" v-for="(item,index) in topList" @click="selectItem(item)">
           <div class="icon">
-            <img width="100" height="100">
+            <img width="100" height="100" v-lazy="item.picUrl">
           </div>
           <ul class="songlist">
-            <li class="song">
-              <span></span>
-              <span></span>
+            <li class="song" v-for="(song,index) in item.songList">
+              <span>{{ index + 1 }}</span>
+              <span>{{ song.songname }}-{{song.singername}}</span>
             </li>
           </ul>
         </li>
       </ul>
-    </div>
+      <div class="loading-container" v-show="!topList.length">
+        <loading></loading>
+      </div>
+    </scroll>
     <router-view></router-view>
   </div>
 </template>
 <script type="text/ecmascript-6">
+  import {mapMutations} from 'vuex';
+  import Scroll from 'base/scroll/scroll.vue';
+  import Loading from 'base/loading/loading.vue';
+  import {getRankList} from 'api/rank.js';
+  import {ERR_OK} from 'api/config.js';
+  import {playListMixin} from 'common/js/mixin.js';
   export default {
+    mixins: [playListMixin],
     data() {
-      return {}
+      return {
+        topList: []
+      }
+    },
+    created() {
+      this._getRankList()
+    },
+    methods: {
+      selectItem(item) {
+        this.$router.push({
+          path: `/rank/${item.id}`
+        })
+        this.setTopList(item);
+      },
+      handlePlayList(playList) {
+        const bottom = playList.length ? '60px' : '';
+        this.$refs.rank.style.bottom = bottom;
+        this.$refs.toplist.refresh();
+      },
+      _getRankList() {
+        getRankList().then((res) => {
+          if (res.code === ERR_OK) {
+            this.topList = res.data.topList;
+          }
+        })
+      },
+      ...mapMutations({
+        setTopList: 'TOP_LIST'
+      })
+    },
+    components: {
+      Scroll,
+      Loading
     }
   }
 </script>

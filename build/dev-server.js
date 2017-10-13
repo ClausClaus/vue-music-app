@@ -28,10 +28,12 @@ var recommend = require('./middleware/recommend');
 var singer = require('./middleware/singer');
 var song = require('./middleware/song');
 var songAlbum = require('./middleware/songalbum');
+var rank = require('./middleware/rank');
 app.use('/api', singer);
 app.use('/api', recommend);
 app.use('/api', song);
 app.use('/api', songAlbum);
+app.use('/api', rank);
 /* 自定义代理请求 end */
 var compiler = webpack(webpackConfig)
 

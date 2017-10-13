@@ -8,6 +8,7 @@ const state = {
   sequenceList: [], // 顺序列表，基于 播放列表 做了排序
   mode: playMode.sequence, // 播放模式,默认是顺序播放
   currentIndex: -1, // 当前播放的是哪首歌,
-  disc: {} // 推荐页面歌单列表对象
+  disc: {}, // 推荐页面歌单列表对象
+  topList:{}
 }
 export default state;
