@@ -37,7 +37,7 @@
 <style lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
 
-  .progress-circle, .progress-circle-container
+  .progress-circle.progress-circle-container
     position: relative
     circle
       stroke-width: 8px

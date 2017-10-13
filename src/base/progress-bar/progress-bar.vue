@@ -97,7 +97,7 @@
 <style lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
 
-  .progress-bar, .progress-bar-container
+  .progress-bar.progress-bar-container
     height: 30px
     .bar-inner
       position: relative

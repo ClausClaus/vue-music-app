@@ -487,7 +487,7 @@
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
 
-  .player, .player-container
+  .player.player-container
     .normal-player
       position: fixed
       left: 0

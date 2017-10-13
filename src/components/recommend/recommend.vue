@@ -106,7 +106,7 @@
 <style lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
 
-  .recommend, .recommend-container
+  .recommend.recommend-container
     position: fixed
     width: 100%
     top: 88px

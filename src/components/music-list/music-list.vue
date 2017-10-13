@@ -22,7 +22,7 @@
             :probeType="probeType"
             @scroll="scroll">
       <div class="song-list-wrapper">
-        <song-list @select="selectItem" :songs="songs"></song-list>
+        <song-list @select="selectItem" :songs="songs" :rank="rank"></song-list>
       </div>
       <div class="loading-container" v-show="!songs.length">
         <loading></loading>
@@ -137,6 +137,10 @@
       title: {
         type: String,
         default: ''
+      },
+      rank: {
+        type: Boolean,
+        default: false
       }
     },
     components: {
@@ -151,7 +155,7 @@
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
 
-  .music-list, .music-list-container
+  .music-list.music-list-container
     position: fixed
     z-index: 100
     top: 0

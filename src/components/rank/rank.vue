@@ -72,7 +72,7 @@
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
 
-  .rank, .rank-container
+  .rank.rank-container
     position: fixed
     width: 100%
     top: 88px

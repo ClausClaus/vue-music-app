@@ -118,7 +118,7 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
 
-  .slider, .slider-container
+  .slider.slider-container
     min-height: 1px
     .slider-group
       position: relative

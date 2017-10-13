@@ -166,7 +166,7 @@
 <style lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
 
-  .listview, .listview-container
+  .listview.listview-container
     position: relative
     width: 100%
     height: 100%

@@ -22,7 +22,7 @@
 
 <style lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
-  .tab-container, .tab
+   .tab.tab-container
     display: flex
     height: 44px
     line-height: 44px

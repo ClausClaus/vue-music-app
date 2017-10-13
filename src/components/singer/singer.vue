@@ -118,7 +118,7 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-  .singer, .singer-container
+  .singer.singer-container
     position: fixed
     top: 88px
     bottom: 0

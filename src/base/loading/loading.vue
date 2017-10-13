@@ -17,7 +17,7 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
 
-  .loading,.loading-container
+  .loading.loading-container
     width: 100%
     text-align: center
     .desc
