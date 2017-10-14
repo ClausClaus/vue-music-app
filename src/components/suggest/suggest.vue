@@ -1,171 +1,94 @@
 <template>
-  <scroll ref="suggest"
-          class="suggest"
-          :data="result"
-          :pullup="pullup"
-          :beforeScroll="beforeScroll"
-          @scrollToEnd="searchMore"
-          @beforeScroll="listScroll"
-  >
+  <div ref="suggest" class="suggest suggest-container">
     <ul class="suggest-list">
-      <li @click="selectItem(item)" class="suggest-item" v-for="item in result">
+      <li class="suggest-item" v-for="(item,index) in result">
         <div class="icon">
-          <i :class="getIconCls(item)"></i>
+          <i :class="getItemClass(item)"></i>
         </div>
         <div class="name">
           <p class="text" v-html="getDisplayName(item)"></p>
         </div>
       </li>
-      <loading v-show="hasMore" title=""></loading>
     </ul>
-    <div v-show="!hasMore && !result.length" class="no-result-wrapper">
-      <no-result title="抱歉，暂无搜索结果"></no-result>
-    </div>
-  </scroll>
+  </div>
 </template>
 
 <script type="text/ecmascript-6">
-  import Scroll from 'base/scroll/scroll'
-  import Loading from 'base/loading/loading'
-  import NoResult from 'base/no-result/no-result'
-  import {search} from 'api/search'
-  import {ERR_OK} from 'api/config'
-  import {createSong} from 'common/js/song'
-  import {mapMutations, mapActions} from 'vuex'
-  import Singer from 'common/js/singer'
+  import {search} from 'api/search.js';
+  import {ERR_OK} from 'api/config.js';
+  import {filterSinger} from 'common/js/song';
 
-  const TYPE_SINGER = 'singer'
-  const perpage = 20
-
+  const TYPE_SINEGR = 'singer';
   export default {
-    props: {
-      showSinger: {
-        type: Boolean,
-        default: true
-      },
-      query: {
-        type: String,
-        default: ''
-      }
-    },
     data() {
       return {
         page: 1,
-        pullup: true,
-        beforeScroll: true,
-        hasMore: true,
         result: []
       }
     },
+    props: {
+      query: {type: String, default: ''},
+      showSinger: {type: Boolean, default: true}
+    },
     methods: {
-      refresh() {
-        this.$refs.suggest.refresh()
-      },
       search() {
-        this.page = 1
-        this.hasMore = true
-        this.$refs.suggest.scrollTo(0, 0)
-        search(this.query, this.page, this.showSinger, perpage).then((res) => {
-          if (res.code === ERR_OK) {
-            this.result = this._genResult(res.data)
-            this._checkMore(res.data)
-          }
-        })
-      },
-      searchMore() {
-        if (!this.hasMore) {
-          return
-        }
-        this.page++
-        search(this.query, this.page, this.showSinger, perpage).then((res) => {
-          if (res.code === ERR_OK) {
-            this.result = this.result.concat(this._genResult(res.data))
-            this._checkMore(res.data)
-          }
-        })
-      },
-      listScroll() {
-        this.$emit('listScroll')
-      },
-      selectItem(item) {
-        if (item.type === TYPE_SINGER) {
-          const singer = new Singer({
-            id: item.singermid,
-            name: item.singername
+        search(this.query, this.page, this.showSinger)
+          .then((res) => {
+            if (res.code === ERR_OK) {
+              this.result = this._genResult(res.data);
+//              console.log(this.result);
+            }
           })
-          this.$router.push({
-            path: `/search/${singer.id}`
-          })
-          this.setSinger(singer)
+      },
+      /**
+       *  根据类型来判断是歌手还是歌曲。
+       * @param item
+       * @returns {*}
+       */
+      getItemClass(item) {
+        if (item.type === TYPE_SINEGR) {
+          return 'icon-mine';
         } else {
-          this.insertSong(item)
+          return 'icon-music';
         }
-        this.$emit('select', item)
       },
+      /**
+       * 根据类型来判断歌曲信息的显示格式
+       * @param item
+       * @returns {*}
+       */
       getDisplayName(item) {
-        if (item.type === TYPE_SINGER) {
+        if (item.type === TYPE_SINEGR) {
           return item.singername
         } else {
-          return `${item.name}-${item.singer}`
-        }
-      },
-      getIconCls(item) {
-        if (item.type === TYPE_SINGER) {
-          return 'icon-mine'
-        } else {
-          return 'icon-music'
+          return `${item.songname}-${filterSinger(item.singer)}`
         }
       },
       _genResult(data) {
-        let ret = []
+        let ret = [];
+        // 条件成立的话证明搜索的是歌手。
         if (data.zhida && data.zhida.singerid) {
-          ret.push({...data.zhida, ...{type: TYPE_SINGER}})
+          ret.push({...data.zhida, ...{type: TYPE_SINEGR}}) // 使用扩展运算符将多个对象合并后添加到数组当中
         }
         if (data.song) {
-          ret = ret.concat(this._normalizeSongs(data.song.list))
+          ret = ret.concat(data.song.list);
         }
-        return ret
-      },
-      _normalizeSongs(list) {
-        let ret = []
-        list.forEach((musicData) => {
-          if (musicData.songid && musicData.albummid) {
-            ret.push(createSong(musicData))
-          }
-        })
-        return ret
-      },
-      _checkMore(data) {
-        const song = data.song
-        if (!song.list.length || (song.curnum + song.curpage * perpage) > song.totalnum) {
-          this.hasMore = false
-        }
-      },
-      ...mapMutations({
-        setSinger: 'SET_SINGER'
-      }),
-      ...mapActions([
-        'insertSong'
-      ])
-    },
-    watch: {
-      query(newQuery) {
-        this.search(newQuery)
+        return ret;
       }
     },
-    components: {
-      Scroll,
-      Loading,
-      NoResult
+    watch: {
+      query() {
+        this.search()
+      }
     }
   }
 </script>
 
-<style scoped lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
 
-  .suggest
+  .suggest.suggest-container
     height: 100%
     overflow: hidden
     .suggest-list
