@@ -7,8 +7,22 @@
 </template>
 <script type="text/ecmascript-6">
   import SearchBox from 'base/search-box/search-box.vue';
+  import {getHotKey} from 'api/search.js';
+  import {ERR_OK} from 'api/config.js';
 
   export default {
+    created() {
+      this._getHotKey();
+    },
+    methods: {
+      _getHotKey() {
+        getHotKey().then((res) => {
+          if (res.code === ERR_OK) {
+            console.log(res.data.hotkey);
+          }
+        })
+      }
+    },
     components: {
       SearchBox
     }
