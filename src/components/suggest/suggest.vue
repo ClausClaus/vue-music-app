@@ -2,9 +2,11 @@
   <scroll
     :pullup="pullup"
     :data="result"
+    :beforeScroll="beforeScroll"
     ref="suggest"
     class="suggest suggest-container"
-    @scrollToEnd="searchMore">
+    @scrollToEnd="searchMore"
+    @beforeScroll="listScroll">
     <ul class="suggest-list">
       <li @click.stop.prevent="selectItem(item)" class="suggest-item" v-for="(item,index) in result">
         <div class="icon">
@@ -16,12 +18,16 @@
       </li>
       <loading v-show="hasMore" title=""></loading>
     </ul>
+    <div v-show="!hasMore && !result.length" class="no-result-wrapper">
+      <no-result title="抱歉，暂无搜索结果"></no-result>
+    </div>
   </scroll>
 </template>
 
 <script type="text/ecmascript-6">
   import {mapMutations, mapActions} from 'vuex';
   import Scroll from 'base/scroll/scroll.vue';
+  import NoResult from 'base/no-result/no-result.vue';
   import Loading from 'base/loading/loading.vue';
   import {search} from 'api/search.js';
   import {ERR_OK} from 'api/config.js';
@@ -37,6 +43,7 @@
         result: [],
         pullup: true,
         hasMore: true,
+        beforeScroll:true
       }
     },
     props: {
@@ -45,7 +52,7 @@
     },
     methods: {
       /**
-       *
+       *  点击搜索结果项的执行函数
        * */
       selectItem(item) {
         if (item.type === TYPE_SINEGR) {
@@ -57,7 +64,7 @@
             path: `/search/${singer.id}`
           })
           this.setSinger(singer);
-        }else {
+        } else {
           this.insertSong(item);
         }
       },
@@ -72,6 +79,13 @@
               this.checkMore(res.data);
             }
           })
+      },
+      /**
+       * 触发移动端键盘收起，发射事件到父组件
+       *
+       * */
+      listScroll(){
+        this.$emit('listScroll');
       },
       /**
        * 加载更多
@@ -158,7 +172,8 @@
     },
     components: {
       Scroll,
-      Loading
+      Loading,
+      NoResult
     }
   }
 </script>

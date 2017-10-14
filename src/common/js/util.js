@@ -14,3 +14,21 @@ export function shuffle(arr) {
   }
   return _arr;
 }
+
+/**
+ * 节流函数
+ * @param func 要被节流的函数
+ * @param delay 需要延时的时间
+ *
+ */
+export function debounce(func, delay) {
+  let timer;
+  return function (...args) {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(() => {
+      func.apply(this, args)
+    }, delay)
+  }
+}
