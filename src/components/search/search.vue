@@ -1,7 +1,20 @@
 <template>
   <div class="search search-container">
     <div class="search-box-wrapper">
-      <search-box></search-box>
+      <search-box ref="searchbox"></search-box>
+    </div>
+    <div class="shortcut-wrapper">
+      <div class="shortcut">
+        <div class="hot-key">
+          <h1 class="title">热门搜索</h1>
+          <ul>
+            <li class="item" v-for="(item,index) in hotKey" @click.stop.prevent="addQuery(item.k)"
+                :class="{'current':index === 0}">
+              <span>{{item.k}}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -11,14 +24,22 @@
   import {ERR_OK} from 'api/config.js';
 
   export default {
+    data() {
+      return {
+        hotKey: []
+      }
+    },
     created() {
       this._getHotKey();
     },
     methods: {
+      addQuery(query) {
+        this.$refs.searchbox.setQuery(query);
+      },
       _getHotKey() {
         getHotKey().then((res) => {
           if (res.code === ERR_OK) {
-            console.log(res.data.hotkey);
+            this.hotKey = res.data.hotkey.slice(0, 10);
           }
         })
       }
@@ -58,6 +79,10 @@
             background: $color-highlight-background
             font-size: $font-size-medium
             color: $color-text-d
+            &.current
+              color: $color-theme
+              border: 1px solid $color-theme
+              box-sizing: border-box
         .search-history
           position: relative
           margin: 0 20px
