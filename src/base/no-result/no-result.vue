@@ -1,5 +1,5 @@
 <template>
-  <div class="no-result">
+  <div class="no-result no-result-container">
     <div class="no-result-icon"></div>
     <p class="no-result-text">{{title}}</p>
   </div>
@@ -16,11 +16,11 @@
   }
 </script>
 
-<style scoped lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
 
-  .no-result
+  .no-result.no-result-container
     text-align: center
     .no-result-icon
       width: 86px

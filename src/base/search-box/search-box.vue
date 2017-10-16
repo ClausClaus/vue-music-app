@@ -66,7 +66,9 @@
       background: $color-highlight-background
       color: $color-text
       font-size: $font-size-medium
-      caret-color: $color-text
+      outline: none
+      &:focus
+        border: 1px solid $color-theme
       &::placeholder
         color: $color-text-d
     .icon-dismiss

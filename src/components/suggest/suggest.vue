@@ -43,7 +43,7 @@
         result: [],
         pullup: true,
         hasMore: true,
-        beforeScroll:true
+        beforeScroll: true
       }
     },
     props: {
@@ -88,7 +88,7 @@
        * 触发移动端键盘收起，发射事件到父组件
        *
        * */
-      listScroll(){
+      listScroll() {
         this.$emit('listScroll');
       },
       /**
@@ -161,6 +161,9 @@
           }
         })
         return ret;
+      },
+      refresh() {
+        this.$refs.suggest.refresh();
       },
       ...mapMutations({
         setSinger: 'SET_SINGER'
