@@ -67,7 +67,11 @@
         } else {
           this.insertSong(item);
         }
+        this.$emit('saveHisStory')
       },
+      /**
+       * 第一次搜索时的请求
+       * */
       search() {
         this.page = 1;
         this.hasMore = true;

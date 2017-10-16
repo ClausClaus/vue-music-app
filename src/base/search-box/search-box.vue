@@ -1,7 +1,7 @@
 <template>
   <div class="search-box search-box-container">
     <i class="icon-search"></i>
-    <input ref="input" class="box" ref="query" v-model="query" :placeholder="placeholder"/>
+    <input ref="input" class="box" v-model="query" :placeholder="placeholder"/>
     <i @click.stop.prevent="clear" class="icon-dismiss" v-show="query"></i>
   </div>
 </template>
@@ -16,6 +16,9 @@
       }
     },
     created() {
+      /**
+       * 使用节流函数
+       */
       this.$watch('query', debounce((newQuery) => {
 
         this.$emit('query', newQuery)
@@ -28,7 +31,7 @@
       setQuery(query) {
         this.query = query;
       },
-      blur(){
+      blur() {
         this.$refs.input.blur();
       }
     },
@@ -63,6 +66,7 @@
       background: $color-highlight-background
       color: $color-text
       font-size: $font-size-medium
+      caret-color: $color-text
       &::placeholder
         color: $color-text-d
     .icon-dismiss

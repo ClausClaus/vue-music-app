@@ -1,94 +1,43 @@
-import storage from 'good-storage'
+import storage from 'good-storage';
 
-const SEARCH_KEY = '__search__'
-const SEARCH_MAX_LEN = 15
+const SEARCH_KEY = '__search__'; // 搜索列表key,代表搜索历史
+const SEARCH_MAX_LENGTH = 15;// 最大的保存搜索storage,超过15条删除旧的storage
 
-const PLAY_KEY = '__play__'
-const PLAY_MAX_LEN = 200
-
-const FAVORITE_KEY = '__favorite__'
-const FAVORITE_MAX_LEN = 200
-
-function insertArray(arr, val, compare, maxLen) {
-  const index = arr.findIndex(compare)
+/**
+ *  格式化搜索历史函数
+ * @param arr [ 需要格式化的数组 ]
+ * @param val [ 需要存取的值 ]
+ * @param compare [ 比较函数 ]
+ * @param maxlen [ 最大存储的长度 ]
+ */
+function insertArray(arr, val, compare, maxlen) {
+  const index = arr.findIndex(compare);
+  // 1.0 如果数组中已经有这条数据，直接返回，不做存储
   if (index === 0) {
-    return
+    return;
   }
+  // 2.0 如果这条数据不是在第一的位置，那么先删除掉这条数据
   if (index > 0) {
-    arr.splice(index, 1)
+    arr.splice(index, 1);
   }
-  arr.unshift(val)
-  if (maxLen && arr.length > maxLen) {
-    arr.pop()
+  // 3.0 然后再插入到最前面
+  arr.unshift(val);
+  // 4.0 如果存储的数据超过最大的存储量，那么从数组的后面删除这条数据，保持在15条
+  if (maxlen && arr.length > maxlen) {
+    arr.pop();
   }
 }
 
-function deleteFromArray(arr, compare) {
-  const index = arr.findIndex(compare)
-  if (index > -1) {
-    arr.splice(index, 1)
-  }
-}
 
 export function saveSearch(query) {
-  let searches = storage.get(SEARCH_KEY, [])
-  insertArray(searches, query, (item) => {
-    return item === query
-  }, SEARCH_MAX_LEN)
-  storage.set(SEARCH_KEY, searches)
-  return searches
-}
-
-export function deleteSearch(query) {
-  let searches = storage.get(SEARCH_KEY, [])
-  deleteFromArray(searches, (item) => {
-    return item === query
-  })
-  storage.set(SEARCH_KEY, searches)
-  return searches
-}
-
-export function clearSearch() {
-  storage.remove(SEARCH_KEY)
-  return []
+  let searchs = storage.get(SEARCH_KEY, []);
+  insertArray(searchs, query, (item) => {
+    return item === query;
+  }, SEARCH_MAX_LENGTH);
+  storage.set(SEARCH_KEY, searchs);
+  return searchs;
 }
 
 export function loadSearch() {
   return storage.get(SEARCH_KEY, [])
 }
-
-export function savePlay(song) {
-  let songs = storage.get(PLAY_KEY, [])
-  insertArray(songs, song, (item) => {
-    return song.id === item.id
-  }, PLAY_MAX_LEN)
-  storage.set(PLAY_KEY, songs)
-  return songs
-}
-
-export function loadPlay() {
-  return storage.get(PLAY_KEY, [])
-}
-
-export function saveFavorite(song) {
-  let songs = storage.get(FAVORITE_KEY, [])
-  insertArray(songs, song, (item) => {
-    return song.id === item.id
-  }, FAVORITE_MAX_LEN)
-  storage.set(FAVORITE_KEY, songs)
-  return songs
-}
-
-export function deleteFavorite(song) {
-  let songs = storage.get(FAVORITE_KEY, [])
-  deleteFromArray(songs, (item) => {
-    return item.id === song.id
-  })
-  storage.set(FAVORITE_KEY, songs)
-  return songs
-}
-
-export function loadFavorite() {
-  return storage.get(FAVORITE_KEY, [])
-}
-

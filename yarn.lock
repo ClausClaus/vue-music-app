@@ -1896,6 +1896,12 @@ globals@^9.18.0:
   version "9.18.0"
   resolved "http://registry.npm.taobao.org/globals/download/globals-9.18.0.tgz#aa3896b3e69b487f17e31ed2143d69a8e30c2d8a"
 
+good-storage@^1.0.1:
+  version "1.0.1"
+  resolved "http://registry.npm.taobao.org/good-storage/download/good-storage-1.0.1.tgz#9ed829b65e2b19089beefb84cca15f656d2483d9"
+  dependencies:
+    babel-runtime "^6.0.0"
+
 graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
   version "4.1.11"
   resolved "http://registry.npm.taobao.org/graceful-fs/download/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
