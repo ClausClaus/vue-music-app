@@ -1,7 +1,7 @@
 import * as types from './mutation-type';
 import {playMode} from 'common/js/config';
 import {shuffle} from "common/js/util";
-import {saveSearch} from 'common/js/cache';
+import {saveSearch, deleteSearch, clearSearch} from 'common/js/cache';
 
 /**
  *  比较歌曲列表中索引与当前正在播放歌曲的索引，得到随机播放列表中的索引
@@ -101,7 +101,27 @@ export const insertSong = function ({commit, state}, song) {
   commit(types.SET_FULL_SCREEN, true);
   commit(types.SET_PLAYING_STAET, true);
 }
-export const saveSearchHisStory = function ({commit}, query) {
+/**
+ *  保存搜索历史
+ * @param commit
+ * @param query
+ */
+export const saveSearchHistory = function ({commit}, query) {
   // 将搜索列表重新格式化之后再commit到mutations中
-  commit(types.SET_SEARCH_HISSTORY, saveSearch(query));
+  commit(types.SET_SEARCH_HISTORY, saveSearch(query));
+}
+/**
+ *  删除单个搜索历史
+ * @param commit
+ * @param query
+ */
+export const deleteSearchHistory = function ({commit}, query) {
+  commit(types.SET_SEARCH_HISTORY, deleteSearch(query));
+}
+/**
+ *  删除所有搜索历史
+ * @param commit
+ */
+export const clearSearchHistory = function ({commit}) {
+  commit(types.SET_SEARCH_HISTORY, clearSearch());
 }

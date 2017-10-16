@@ -67,7 +67,7 @@
         } else {
           this.insertSong(item);
         }
-        this.$emit('saveHisStory')
+        this.$emit('saveHistory')
       },
       /**
        * 第一次搜索时的请求

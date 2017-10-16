@@ -16,4 +16,4 @@ export const SET_DISC = 'SET_DISC';
 
 export const TOP_LIST = 'TOP_LIST';
 
-export const SET_SEARCH_HISSTORY = 'SET_SEARCH_HISSTORY';
+export const SET_SEARCH_HISTORY = 'SET_SEARCH_HISTORY';

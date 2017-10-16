@@ -1,9 +1,9 @@
 <template>
   <div class="search-list search-list-container" v-show="searches.length">
     <ul>
-      <li class="search-item" v-for="(item,index) in searches">
+      <li @click.stop.prevent="selectStory(item)" class="search-item" v-for="(item,index) in searches">
         <span class="text">{{item}}</span>
-        <span class="icon">
+        <span class="icon" @click.stop.prevent="deleteOne(item)">
           <i class="icon-delete"></i>
         </span>
       </li>
@@ -17,6 +17,14 @@
       searches: {
         type: Array,
         default: []
+      }
+    },
+    methods: {
+      selectStory(item) {
+        this.$emit('selectStory', item);
+      },
+      deleteOne(item) {
+        this.$emit('deleteOne', item);
       }
     }
   }

@@ -11,6 +11,6 @@ const state = {
   currentIndex: -1, // 当前播放的是哪首歌,
   disc: {}, // 推荐页面歌单列表对象
   topList: {}, // 推荐页面歌单列表详情页数据
-  searchHisStory: loadSearch() // 搜索列表页面搜索历史
+  searchHistory: loadSearch() // 搜索列表页面搜索历史
 }
 export default state;
