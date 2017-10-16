@@ -14,6 +14,15 @@
             </li>
           </ul>
         </div>
+        <div class="search-history" v-show="searchHisStory.length">
+          <h1 class="title">
+            <span class="text">搜索历史</span>
+            <span class="clear">
+              <i class="icon-clear"></i>
+            </span>
+          </h1>
+          <search-list :searches="searchHisStory"></search-list>
+        </div>
       </div>
     </div>
     <div class="search-result" v-show="query">
@@ -23,11 +32,12 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-  import {mapActions} from 'vuex';
+  import {mapActions, mapGetters} from 'vuex';
   import SearchBox from 'base/search-box/search-box.vue';
   import {getHotKey} from 'api/search.js';
   import {ERR_OK} from 'api/config.js';
   import Suggest from 'components/suggest/suggest.vue';
+  import SearchList from 'base/search-list/search-list.vue';
 
   export default {
     data() {
@@ -63,9 +73,15 @@
         'saveSearchHisStory'
       ])
     },
+    computed: {
+      ...mapGetters([
+        'searchHisStory'
+      ])
+    },
     components: {
       SearchBox,
-      Suggest
+      Suggest,
+      SearchList
     }
   }
 </script>
