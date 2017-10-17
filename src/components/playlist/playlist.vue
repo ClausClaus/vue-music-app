@@ -7,7 +7,7 @@
           <h1 class="title">
             <i class="icon"></i>
             <span class="text"></span>
-            <span class="clear"><i class="icon-clear"></i></span>
+            <span class="clear" @click.stop.prevent="showConfirm"><i class="icon-clear"></i></span>
           </h1>
         </div>
         <!-- 歌曲列表头部 end -->
@@ -16,20 +16,19 @@
           ref="listContent"
           class="list-content"
           :data="sequenceList">
-          <!--<transition-group ref="list" name="list" tag="ul">-->
-          <ul>
-            <li @click.stop="selectSong(item,index)" class="item" v-for="(item,index) in sequenceList">
+          <transition-group ref="list" name="list" tag="ul">
+            <li :key="item.id" ref="listItem" @click.stop="selectSong(item,index)" class="item"
+                v-for="(item,index) in sequenceList">
               <i class="current" :class="getCurrentIcon(item)"></i>
               <span class="text">{{item.name}}</span>
               <span class="like">
                 <i class="icon-not-favorite"></i>
               </span>
-              <span class="delete">
+              <span class="delete" @click.stop.prevent="deleteOne(item)">
                 <i class="icon-delete"></i>
               </span>
             </li>
-          </ul>
-          <!--</transition-group>-->
+          </transition-group>
         </scroll>
         <!-- 歌曲列表内容 end -->
         <!-- 添加新歌曲 start -->
@@ -44,14 +43,16 @@
           <span>关闭</span>
         </div>
       </div>
+      <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
     </div>
   </transition>
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters, mapMutations} from 'vuex';
+  import {mapGetters, mapMutations, mapActions} from 'vuex';
   import {playMode} from 'common/js/config.js';
   import Scroll from 'base/scroll/scroll.vue';
+  import Confirm from 'base/confirm/confirm.vue';
 
   export default {
     data() {
@@ -60,6 +61,29 @@
       }
     },
     methods: {
+      // 点击清空按钮时
+      confirmClear() {
+        this.deleteSongList();
+        this.hide();
+      },
+      //清空所有歌曲
+      showConfirm() {
+        this.$refs.confirm.show();
+      },
+      // 删除歌曲
+      deleteOne(item) {
+        this.deleteSong(item);
+        if (!this.playList.length) {
+          this.hide();
+        }
+      },
+      // 让当前正在播放的歌曲自动滚动到顶部位置
+      scrollToCurrent(current) {
+        const index = this.sequenceList.findIndex((song) => {
+          return current.id === song.id;
+        })
+        this.$refs.listContent.scrollToElement(this.$refs.listItem[index], 300);
+      },
       // 点击切换歌曲
       selectSong(item, index) {
         if (this.mode === playMode.random) {
@@ -82,6 +106,7 @@
         this.showFlag = true;
         setTimeout(() => {
           this.$refs.listContent.refresh();
+          this.scrollToCurrent(this.currentSong);
         }, 20);
       },
       hide() {
@@ -90,7 +115,19 @@
       ...mapMutations({
         setCurrentIndex: 'SET_CURRENT_INDEX',
         setPlayingState: 'SET_PLAYING_STATE',
-      })
+      }),
+      ...mapActions([
+        'deleteSong',
+        'deleteSongList'
+      ])
+    },
+    watch: {
+      currentSong(newSong, oldSong) {
+        if (!this.showFlag || newSong.id === oldSong) {
+          return;
+        }
+        this.scrollToCurrent(newSong);
+      }
     },
     computed: {
       ...mapGetters([
@@ -101,7 +138,8 @@
       ])
     },
     components: {
-      Scroll
+      Scroll,
+      Confirm
     }
   }
 </script>
@@ -161,10 +199,12 @@
           height: 40px
           padding: 0 30px 0 20px
           overflow: hidden
+          opacity: 1
           &.list-enter-active, &.list-leave-active
             transition: all 0.1s
           &.list-enter, &.list-leave-to
             height: 0
+            opacity: 0
           .current
             flex: 0 0 20px
             width: 20px

@@ -125,3 +125,34 @@ export const deleteSearchHistory = function ({commit}, query) {
 export const clearSearchHistory = function ({commit}) {
   commit(types.SET_SEARCH_HISTORY, clearSearch());
 }
+/**
+ * playList.vue歌曲列表中点击删除时的action操作
+ * @param commit
+ * @param state
+ * @param song
+ */
+export const deleteSong = function ({commit, state}, song) {
+  let playList = state.playList.slice();
+  let sequenceList = state.sequenceList.slice();
+  let currentIndex = state.currentIndex;
+  let playIndex = findIndex(playList, song);
+  playList.splice(playIndex, 1);
+  let sequenceIndex = findIndex(sequenceList, song);
+  sequenceList.splice(sequenceIndex, 1);
+
+  if (currentIndex > playIndex || currentIndex === playList.length) {
+    currentIndex--;
+  }
+  commit(types.SET_PLAYLIST, playList);
+  commit(types.SET_SEQUENCE_LIST, sequenceList);
+  commit(types.SET_CURRENT_INDEX, currentIndex);
+
+  const playingState = playList.length > 0;
+  commit(types.SET_PLAYING_STATE, playingState);
+}
+export const deleteSongList = function ({commit}) {
+  commit(types.SET_PLAYLIST, []);
+  commit(types.SET_SEQUENCE_LIST, []);
+  commit(types.SET_CURRENT_INDEX, -1);
+  commit(types.SET_PLAYING_STATE, false);
+}
