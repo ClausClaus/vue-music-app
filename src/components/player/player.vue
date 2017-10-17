@@ -128,7 +128,7 @@
   import animations from 'create-keyframe-animation';
   import {prefixStyle} from 'common/js/dom.js';
   import {playMode} from 'common/js/config.js';
-//  import {shuffle} from 'common/js/util.js';
+  //  import {shuffle} from 'common/js/util.js';
   import ProgressBar from 'base/progress-bar/progress-bar.vue';
   import ProgressCircle from 'base/progress-circle/progress-circle.vue';
   import Scroll from 'base/scroll/scroll.vue';
