@@ -1,9 +1,9 @@
-import {mapGetters, mapMutations} from 'vuex';
+import {mapGetters, mapMutations, mapActions} from 'vuex';
 import {playMode} from 'common/js/config.js';
 import {shuffle} from 'common/js/util.js';
 
 /**
- *  歌曲列表混入对象，自动计算列表高度，实现scroll的重绘
+ *  歌曲列表混入对象，自动计算列表高度，实现scroll的重绘 (使用在有列表组件的页面当中)
  * @type {{computed: {}, mounted: (function()), activated: (function()), watch: {playList: (function(*=))}, methods: {handlePlayList: (function())}}}
  */
 export const playListMixin = {
@@ -31,6 +31,10 @@ export const playListMixin = {
     }
   }
 }
+/**
+ *  player.vue 与 playlist.vue页面之间的方法与vuex共享mixin
+ * @type {{computed: {iconMode: (function())}, methods: {changeMode: (function()), resetCurrentIndex: (function(*))}}}
+ */
 export const playerMixin = {
   computed: {
     iconMode() {
@@ -73,5 +77,33 @@ export const playerMixin = {
       setPlayMode: 'SET_PLAY_MODE',
       setPlayList: 'SET_PLAYLIST'
     })
+  }
+}
+export const searchMixin = {
+  data() {
+    return {query: ''}
+  },
+  computed: {
+    ...mapGetters([
+      'searchHistory'
+    ])
+  },
+  methods: {
+    saveSearch() {
+      this.saveSearchHistory(this.query);
+    },
+    blurInput() {
+      this.$refs.searchbox.blur();
+    },
+    onQueryChange(query) {
+      this.query = query;
+    },
+    addQuery(query) {
+      this.$refs.searchbox.setQuery(query);
+    },
+    ...mapActions([
+      'saveSearchHistory',
+      'deleteSearchHistory'
+    ])
   }
 }

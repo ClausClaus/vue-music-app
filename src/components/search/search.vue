@@ -40,7 +40,7 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-  import {mapActions, mapGetters} from 'vuex';
+  import {mapActions} from 'vuex';
   import SearchBox from 'base/search-box/search-box.vue';
   import {getHotKey} from 'api/search.js';
   import {ERR_OK} from 'api/config.js';
@@ -48,14 +48,13 @@
   import SearchList from 'base/search-list/search-list.vue';
   import Confirm from 'base/confirm/confirm.vue';
   import Scroll from 'base/scroll/scroll.vue';
-  import {playListMixin} from 'common/js/mixin.js';
+  import {playListMixin,searchMixin} from 'common/js/mixin.js';
 
   export default {
-    mixins: [playListMixin],
+    mixins: [playListMixin,searchMixin],
     data() {
       return {
         hotKey: [],
-        query: ''
       }
     },
     created() {
@@ -72,18 +71,18 @@
       showConfirm() {
         this.$refs.confirm.show();
       },
-      saveSearch() {
-        this.saveSearchHistory(this.query);
-      },
-      blurInput() {
-        this.$refs.searchbox.blur();
-      },
-      onQueryChange(query) {
-        this.query = query;
-      },
-      addQuery(query) {
-        this.$refs.searchbox.setQuery(query);
-      },
+//      saveSearch() {
+//        this.saveSearchHistory(this.query);
+//      },
+//      blurInput() {
+//        this.$refs.searchbox.blur();
+//      },
+//      onQueryChange(query) {
+//        this.query = query;
+//      },
+//      addQuery(query) {
+//        this.$refs.searchbox.setQuery(query);
+//      },
       _getHotKey() {
         getHotKey().then((res) => {
           if (res.code === ERR_OK) {
@@ -92,8 +91,8 @@
         })
       },
       ...mapActions([
-        'saveSearchHistory',
-        'deleteSearchHistory',
+//        'saveSearchHistory',
+//        'deleteSearchHistory',
         'clearSearchHistory'
       ])
     },
@@ -110,9 +109,6 @@
       shortcut() {
         return this.hotKey.concat(this.searchHistory)
       },
-      ...mapGetters([
-        'searchHistory'
-      ])
     },
     components: {
       SearchBox,

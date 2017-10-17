@@ -33,7 +33,7 @@
         <!-- 歌曲列表内容 end -->
         <!-- 添加新歌曲 start -->
         <div class="list-operate">
-          <div class="add">
+          <div class="add" @click.stop.prevent="addSong">
             <i class="icon-add"></i>
             <span class="text">添加歌曲到队列</span>
           </div>
@@ -44,16 +44,18 @@
         </div>
       </div>
       <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
+      <add-song ref="addSong"></add-song>
     </div>
   </transition>
 </template>
 
 <script type="text/ecmascript-6">
   import {mapActions} from 'vuex';
+  import {playerMixin} from 'common/js/mixin.js';
   import {playMode} from 'common/js/config.js';
   import Scroll from 'base/scroll/scroll.vue';
   import Confirm from 'base/confirm/confirm.vue';
-  import {playerMixin} from 'common/js/mixin.js';
+  import AddSong from 'components/add-song/add-song.vue';
 
   export default {
     mixins: [playerMixin],
@@ -63,6 +65,10 @@
       }
     },
     methods: {
+      // 添加歌曲到队列
+      addSong() {
+        this.$refs.addSong.show();
+      },
       // 点击清空按钮时
       confirmClear() {
         this.deleteSongList();
@@ -135,7 +141,8 @@
     },
     components: {
       Scroll,
-      Confirm
+      Confirm,
+      AddSong
     }
   }
 </script>
