@@ -31,7 +31,7 @@ export const selectPlay = function ({commit, state}, {list, index}) {
   }
   commit(types.SET_CURRENT_INDEX, index);
   commit(types.SET_FULL_SCREEN, true);
-  commit(types.SET_PLAYING_STAET, true);
+  commit(types.SET_PLAYING_STATE, true);
 }
 /**
  * 随机歌曲播放列表操作
@@ -45,7 +45,7 @@ export const randomPlay = function ({commit}, {list}) {
   commit(types.SET_PLAYLIST, randomList);
   commit(types.SET_CURRENT_INDEX, 0);
   commit(types.SET_FULL_SCREEN, true);
-  commit(types.SET_PLAYING_STAET, true);
+  commit(types.SET_PLAYING_STATE, true);
 }
 /**
  *  搜索页面搜索歌曲时的点击触发action
@@ -99,7 +99,7 @@ export const insertSong = function ({commit, state}, song) {
   commit(types.SET_SEQUENCE_LIST, sequenceList);
   commit(types.SET_CURRENT_INDEX, currentIndex);
   commit(types.SET_FULL_SCREEN, true);
-  commit(types.SET_PLAYING_STAET, true);
+  commit(types.SET_PLAYING_STATE, true);
 }
 /**
  *  保存搜索历史

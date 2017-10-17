@@ -424,7 +424,7 @@
       /* vue动画钩子函数 end */
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
-        setPlayIng: 'SET_PLAYING_STAET',
+        setPlayIng: 'SET_PLAYING_STATE',
         setCurrentIndex: 'SET_CURRENT_INDEX',
         setPlayMode: 'SET_PLAY_MODE',
         setPlayList: 'SET_PLAYLIST'

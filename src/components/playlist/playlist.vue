@@ -18,7 +18,7 @@
           :data="sequenceList">
           <!--<transition-group ref="list" name="list" tag="ul">-->
           <ul>
-            <li @click.stop="selectSong(item)" class="item" v-for="(item,index) in sequenceList">
+            <li @click.stop="selectSong(item,index)" class="item" v-for="(item,index) in sequenceList">
               <i class="current" :class="getCurrentIcon(item)"></i>
               <span class="text">{{item.name}}</span>
               <span class="like">
@@ -68,6 +68,7 @@
           })
         }
         this.setCurrentIndex(index);
+        this.setPlayingState(true);
       },
       // 当前的播放歌曲
       getCurrentIcon(item) {
@@ -87,14 +88,16 @@
         this.showFlag = false;
       },
       ...mapMutations({
-        setCurrentIndex: 'SET_CURRENT_INDEX'
+        setCurrentIndex: 'SET_CURRENT_INDEX',
+        setPlayingState: 'SET_PLAYING_STATE',
       })
     },
     computed: {
       ...mapGetters([
         'sequenceList',
         'currentSong',
-        'playList'
+        'playList',
+        'mode'
       ])
     },
     components: {
