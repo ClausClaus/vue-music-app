@@ -104,12 +104,15 @@
             <i :class="miniIcon" class="icon-mini" @click.stop.prevent="togglePlaying"></i>
           </progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click.stop.prevent="showPlayList">
           <i class="icon-playlist"></i>
         </div>
       </div>
       <!-- 播放器收起来后固定在底部的小播放器 end -->
     </transition>
+    <play-list
+      ref="playlist"
+    ></play-list>
     <audio ref="audio"
            :src="currentSong.url"
            @canplay="ready"
@@ -129,6 +132,7 @@
   import ProgressBar from 'base/progress-bar/progress-bar.vue';
   import ProgressCircle from 'base/progress-circle/progress-circle.vue';
   import Scroll from 'base/scroll/scroll.vue';
+  import PlayList from 'components/playlist/playlist.vue';
 
 
   const transform = prefixStyle('transform');
@@ -149,6 +153,9 @@
       this.touch = {};
     },
     methods: {
+      showPlayList() {
+        this.$refs.playlist.show();
+      },
       middleTouchStart(e) {
         this.touch.initiated = true;
         const touch = e.touches[0];
@@ -477,7 +484,8 @@
     components: {
       ProgressBar,
       ProgressCircle,
-      Scroll
+      Scroll,
+      PlayList
     }
 
   }
