@@ -1,5 +1,5 @@
 import {playMode} from 'common/js/config.js';
-import {loadSearch, loadPlay} from 'common/js/cache.js';
+import {loadSearch, loadPlay, loadFavorite} from 'common/js/cache.js';
 
 const state = {
   singer: {}, // 歌手信息{ id:xxx,avatar:xxx,name:xxx }
@@ -12,6 +12,7 @@ const state = {
   disc: {}, // 推荐页面歌单列表对象
   topList: {}, // 推荐页面歌单列表详情页数据
   searchHistory: loadSearch(), // 搜索列表页面搜索历史
-  playHistory: loadPlay()
+  playHistory: loadPlay(), // 最近播放历史记录
+  favoriteList: loadFavorite(), // 我喜欢的歌曲列表
 }
 export default state;

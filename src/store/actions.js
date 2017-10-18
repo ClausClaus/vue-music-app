@@ -1,7 +1,7 @@
 import * as types from './mutation-type';
 import {playMode} from 'common/js/config';
 import {shuffle} from "common/js/util";
-import {saveSearch, deleteSearch, clearSearch, savePlay} from 'common/js/cache';
+import {saveSearch, deleteSearch, clearSearch, savePlay, saveFavorite, deleteFavorite} from 'common/js/cache';
 import Song from "../common/js/song";
 
 /**
@@ -168,4 +168,20 @@ export const deleteSongList = function ({commit}) {
  */
 export const savePlayHistory = function ({commit}, song) {
   commit(types.SET_PLAY_HISTORY, savePlay(song));
+}
+/**
+ * 保存到我的喜欢
+ * @param commit
+ * @param song
+ */
+export const saveFavoriteList = function ({commit}, song) {
+  commit(types.SET_FAVORITE_LIST, saveFavorite(song));
+}
+/**
+ * 删除我的喜欢
+ * @param commit
+ * @param song
+ */
+export const deleteFavotiteList = function ({commit}, song) {
+  commit(types.SET_FAVORITE_LIST, deleteFavorite(song))
 }

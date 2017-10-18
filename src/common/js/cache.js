@@ -6,6 +6,9 @@ const SEARCH_MAX_LENGTH = 15;// 最大的保存搜索历史,超过15条删除旧
 const PLAY_KEY = '__play__'; // 最近播放key,代表最近播放
 const PLAY_MAX_LENGTH = 200; // 最大的保存最近播放历史，超过200条删除旧的storage
 
+const FAVORITE_KEY = '__favorite__';
+const FAVORITE_MAX_LENGTH = 200;
+
 /**
  *  格式化搜索历史
  * @param arr [ 需要格式化的数组 ]
@@ -108,4 +111,26 @@ export function savePlay(song) {
  */
 export function loadPlay() {
   return storage.get(PLAY_KEY, []);
+}
+
+export function saveFavorite() {
+  let songs = storage.get(FAVORITE_KEY, []);
+  insertArray(songs, song, (item) => {
+    return song.id === item.id;
+  })
+  storage.set(FAVORITE_KEY, songs);
+  return songs;
+}
+
+export function deleteFavorite(song) {
+  let songs = storage.get(FAVORITE_KEY, []);
+  deleteFromArray(songs, (item) => {
+    return song.id === item.id;
+  })
+  storage.set(FAVORITE_KEY, songs);
+  return songs;
+}
+
+export function loadFavorite() {
+  return storage.get(FAVORITE_KEY, []);
 }
