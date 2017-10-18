@@ -123,7 +123,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters, mapMutations} from 'vuex';
+  import {mapGetters, mapMutations, mapActions} from 'vuex';
   import Lyric from 'lyric-parser'; // 歌词解析包
   import animations from 'create-keyframe-animation';
   import {prefixStyle} from 'common/js/dom.js';
@@ -293,6 +293,7 @@
       // 歌曲已经切换完毕
       ready() {
         this.songReady = true;
+        this.savePlayHistory(this.currentSong);
       },
       // 切换歌曲时发生错误，不做处理的话其他功能会不能使用
       error() {
@@ -426,11 +427,10 @@
       /* vue动画钩子函数 end */
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
-//        setPlayingState: 'SET_PLAYING_STATE',
-//        setCurrentIndex: 'SET_CURRENT_INDEX',
-//        setPlayMode: 'SET_PLAY_MODE',
-//        setPlayList: 'SET_PLAYLIST'
-      })
+      }),
+      ...mapActions([
+        'savePlayHistory'
+      ])
     },
     watch: {
       currentSong(newSong, oldSong) {

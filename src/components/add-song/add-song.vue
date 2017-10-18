@@ -12,6 +12,27 @@
       </div>
       <div class="shortcut" v-show="!query">
         <switches @switch="switchItem" :switches="switches" :currentIndex="currentIndex"></switches>
+        <div class="list-wrapper">
+          <scroll class="list-scroll" ref="songList" :data="playHistory" v-if="currentIndex === 0">
+            <div class="list-inner">
+              <song-list
+                :songs="playHistory"
+                @select="selectSong">
+
+              </song-list>
+            </div>
+          </scroll>
+          <scroll class="list-scroll" ref="searchList" :refreshDelay="refreshDelay" :data="searchHistory"
+                  v-if="currentIndex === 1">
+            <div class="list-inner">
+              <search-list :searches="searchHistory"
+                           @deleteOne="deleteSearchHistory"
+                           @selectStory="addQuery">
+
+              </search-list>
+            </div>
+          </scroll>
+        </div>
       </div>
       <div class="search-result" v-show="query">
         <suggest :query="query"
@@ -19,15 +40,27 @@
                  @saveHistory="selectSuggest"
                  @listScroll="blurInput"></suggest>
       </div>
+      <top-tip ref="topTip">
+        <div class="tip-title">
+          <i class="icon-ok"></i>
+          <span class="text">一首歌曲已经添加到播放队列</span>
+        </div>
+      </top-tip>
     </div>
   </transition>
 </template>
 
 <script type="text/ecmascript-6">
+  import {mapGetters, mapActions} from 'vuex';
   import SearchBox from 'base/search-box/search-box.vue';
   import Suggest from 'components/suggest/suggest.vue';
   import Switches from 'base/switches/switches.vue';
+  import Scroll from 'base/scroll/scroll.vue';
+  import SongList from 'base/song-list/song-list.vue';
+  import SearchList from 'base/search-list/search-list.vue';
+  import TopTip from 'base/top-tip/top-tip.vue';
   import {searchMixin} from 'common/js/mixin.js';
+  import Song from 'common/js/song.js';
 
   export default {
     mixins: [searchMixin],
@@ -36,30 +69,63 @@
         showFlag: false,
         showSinger: false,
         currentIndex: 0,
+        refreshDelay: 100,
         switches: [
           {name: '最近播放'}, {name: '搜索历史'}
         ]
       }
     },
     methods: {
+      // 顶部Tip显示
+      showTip() {
+        this.$refs.topTip.show();
+      },
+      // 点击最近播放列表中的歌曲
+      selectSong(song, index) {
+        if (index !== 0) {
+          this.insertSong(new Song(song));
+          this.showTip();
+        }
+      },
+      // 保存到搜索历史
+      selectSuggest() {
+        this.saveSearch();
+        this.showTip();
+      },
+      // 切换选项卡
       switchItem(index) {
         this.currentIndex = index;
       },
       show() {
         this.showFlag = true;
+        setTimeout(() => {
+          if (this.currentIndex === 0) {
+            this.$refs.songList.refresh();
+          } else {
+            this.$refs.searchList.refresh();
+          }
+        }, 20)
       },
       hide() {
         this.showFlag = false;
       },
-      // 保存到搜索历史
-      selectSuggest() {
-        this.saveSearch();
-      }
+      ...mapActions([
+        'insertSong'
+      ])
+    },
+    computed: {
+      ...mapGetters([
+        'playHistory'
+      ])
     },
     components: {
       SearchBox,
       Suggest,
-      Switches
+      Switches,
+      Scroll,
+      SongList,
+      SearchList,
+      TopTip
     }
   }
 </script>

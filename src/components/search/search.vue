@@ -4,7 +4,7 @@
       <search-box ref="searchbox" @query="onQueryChange"></search-box>
     </div>
     <div class="shortcut-wrapper" v-show="!query" ref="shortcutWrapper">
-      <scroll class="shortcut" ref="shortcut" :data="shortcut">
+      <scroll class="shortcut" ref="shortcut" :data="shortcut" :refreshDelay="refreshDelay">
         <div>
           <div class="hot-key">
             <h1 class="title">热门搜索</h1>
@@ -48,10 +48,10 @@
   import SearchList from 'base/search-list/search-list.vue';
   import Confirm from 'base/confirm/confirm.vue';
   import Scroll from 'base/scroll/scroll.vue';
-  import {playListMixin,searchMixin} from 'common/js/mixin.js';
+  import {playListMixin, searchMixin} from 'common/js/mixin.js';
 
   export default {
-    mixins: [playListMixin,searchMixin],
+    mixins: [playListMixin, searchMixin],
     data() {
       return {
         hotKey: [],

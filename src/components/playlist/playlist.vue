@@ -15,7 +15,8 @@
         <scroll
           ref="listContent"
           class="list-content"
-          :data="sequenceList">
+          :data="sequenceList"
+          :refreshDelay="refreshDelay">
           <transition-group ref="list" name="list" tag="ul">
             <li :key="item.id" ref="listItem" @click.stop="selectSong(item,index)" class="item"
                 v-for="(item,index) in sequenceList">
@@ -62,6 +63,7 @@
     data() {
       return {
         showFlag: false,
+        refreshDelay: 100
       }
     },
     methods: {
