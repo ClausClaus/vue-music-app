@@ -113,7 +113,7 @@ export function loadPlay() {
   return storage.get(PLAY_KEY, []);
 }
 
-export function saveFavorite() {
+export function saveFavorite(song) {
   let songs = storage.get(FAVORITE_KEY, []);
   insertArray(songs, song, (item) => {
     return song.id === item.id;
