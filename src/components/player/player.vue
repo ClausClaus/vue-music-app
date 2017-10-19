@@ -21,7 +21,7 @@
         </div>
         <!-- 顶部的返回按钮与标题 end -->
         <!-- 中间旋转的图片 start -->
-        <div class="middle"
+          <div class="middle"
              @touchstart.stop.prevent="middleTouchStart"
              @touchmove.stop.prevent="middleTouchMove"
              @touchend.stop.prevent="middleTouchEnd"
@@ -42,7 +42,9 @@
           <scroll :data="currentLyric && currentLyric.lines" class="middle-r" ref="lyricList">
             <div class="lyric-wrapper">
               <div v-if="currentLyric">
-                <p class="text" ref="lyricLine" v-for="(line,index) in currentLyric.lines"
+                <p class="text"
+                   ref="lyricLine"
+                   v-for="(line,index) in currentLyric.lines"
                    :class="{'current':currentLineNum === index}">
                   {{line.txt}}
                 </p>
@@ -240,28 +242,7 @@
         }
         this.playingLyric = txt;
       },
-//      // 修改播放模式
-//      changeMode() {
-//        const mode = (this.mode + 1) % 3;
-//        this.setPlayMode(mode);
-//        let list = null;
-//        if (mode === playMode.random) {
-//          list = shuffle(this.sequenceList);
-//          this.setPlayList(list);
-//          this.resetCurrentIndex(list);
-//        } else {
-//          list = this.sequenceList;
-//        }
-//        this.resetCurrentIndex(list);
-//        this.setPlayList(list);
-//      },
-//      //
-//      resetCurrentIndex(list) {
-//        let index = list.findIndex((item) => {
-//          return item.id === this.currentSong.id;
-//        })
-//        this.setCurrentIndex(index);
-//      },
+
       // 进度条滑动事件，子组件监听并发射，父组件响应事件处理
       onProgressBarChange(percent) {
         const currentTime = this.currentSong.duration * percent;
@@ -346,10 +327,12 @@
       togglePlaying() {
         if (!this.songReady) {
           return;
-        }
-        this.setPlayingState(!this.playing);
-        if (this.currentLyric) {
-          this.currentLyric.togglePlay();
+        } else {
+          this.setPlayingState(!this.playing);
+          // 歌词随着歌曲播放暂停而滚动或暂停滚动
+          if (this.currentLyric) {
+            this.currentLyric.togglePlay();
+          }
         }
       },
       // 关闭大播放器
