@@ -21,7 +21,7 @@
         </div>
         <!-- 顶部的返回按钮与标题 end -->
         <!-- 中间旋转的图片 start -->
-          <div class="middle"
+        <div class="middle"
              @touchstart.stop.prevent="middleTouchStart"
              @touchmove.stop.prevent="middleTouchMove"
              @touchend.stop.prevent="middleTouchEnd"
@@ -162,6 +162,8 @@
       },
       middleTouchStart(e) {
         this.touch.initiated = true;
+        // 用来判断是否是一次移动
+        this.touch.moved = false;
         const touch = e.touches[0];
         this.touch.startX = touch.pageX;
         this.touch.startY = touch.pageY;
@@ -176,6 +178,9 @@
         if (Math.abs(deltaY) > Math.abs(deltaX)) {
           return;
         }
+        if (!this.touch.moved) {
+          this.touch.moved = true;
+        }
         const left = this.currentShow === 'cd' ? 0 : -window.innerWidth;
         const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX));
         this.touch.percent = Math.abs(offsetWidth / window.innerWidth);
@@ -185,6 +190,9 @@
         this.$refs.middleL.style[transitionDuration] = 0;
       },
       middleTouchEnd(e) {
+        if (!this.touch.moved) {
+          return;
+        }
         let offsetWidth;
         let opacity = 0;
         // 从 右向左 滑动，超过百分之10就滑动
@@ -214,6 +222,7 @@
         this.$refs.lyricList.$el.style[transitionDuration] = `${time}ms`;
         this.$refs.middleL.style.opacity = opacity;
         this.$refs.middleL.style[transitionDuration] = `${time}ms`;
+        this.touch.initiated = false;
       },
       // 歌词数据解析
       getLyric() {
